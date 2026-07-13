@@ -17,6 +17,10 @@ If the token files still carry an "awaiting export" note, the design system is n
 - Stats are never framed negatively; a losing record is a rivalry, not a failure.
 - Motion ≤ 400ms. Dark-first canvas.
 
+## Workflow
+
+When work on a feature branch is complete and pushed, always merge it to `main` as well (fast-forward or merge, no PR approval needed). The owner builds from `main`.
+
 ## Stack (when app code lands)
 
 SwiftUI, watchOS companion, SwiftData, CloudKit (premium sync), HealthKit, WeatherKit, CoreLocation, StoreKit 2. No custom backend. Build order lives in `docs/concept.md` §7.
