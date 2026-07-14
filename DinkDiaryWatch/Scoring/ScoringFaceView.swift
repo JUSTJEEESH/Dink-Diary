@@ -2,55 +2,56 @@ import SwiftUI
 
 /// The scoring face, matched to the mock and filling the whole screen. Ignores
 /// the safe area so nothing floats in a margin; the system draws the time over
-/// the top corner. Symmetric around the net: serve pill and THEM at the top
-/// edge, our number and them number hugging the net, US and mode chip at the
-/// bottom edge. The serving team carries an optic dot by its label. Tap a side
-/// and it scores, one tap, immediately. Color is the identity: the bright optic
-/// number is always you (bottom). Long-press anywhere to undo.
+/// the top corner. Each label hugs its number (THEM above its number, US below
+/// its number) and the leftover space is spread evenly around those groups and
+/// the net, so nothing has a lopsided gap. The serving team carries an optic dot
+/// by its label. Tap a side and it scores, one tap, immediately. Color is the
+/// identity: the bright optic number is always you (bottom). Long-press to undo.
 struct ScoringFaceView: View {
     @Binding var engine: ScoreEngine
     var onGameOver: () -> Void
 
     var body: some View {
-        ZStack {
-            DD.Colors.watchCanvas
+        GeometryReader { geo in
+            let numberHeight = geo.size.height * 0.27
 
-            VStack(spacing: 0) {
-                Button {
-                    tap(.them)
-                } label: {
-                    VStack(spacing: 3) {
-                        servePill
+            ZStack {
+                DD.Colors.watchCanvas
+
+                VStack(spacing: 0) {
+                    servePill
+                    Spacer(minLength: 2)
+
+                    VStack(spacing: 2) {
                         teamLabel(.them)
-                        Spacer(minLength: 0)
-                        numeral(engine.themScore, color: DD.Colors.textPrimary)
+                        numeral(engine.themScore, color: DD.Colors.textPrimary, height: numberHeight)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, 2)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
 
-                // Net line (the mock's divider). The kitchen-line motif reads as
-                // the net here; see note to the design owner.
-                KitchenLineMotif()
-                    .padding(.horizontal, DD.Spacing.rowGap)
-                    .allowsHitTesting(false)
+                    Spacer(minLength: 2)
+                    KitchenLineMotif()
+                        .padding(.horizontal, DD.Spacing.rowGap)
+                    Spacer(minLength: 2)
 
-                Button {
-                    tap(.us)
-                } label: {
-                    VStack(spacing: 3) {
-                        numeral(engine.usScore, color: DD.Colors.accentWin)
-                        Spacer(minLength: 0)
+                    VStack(spacing: 2) {
+                        numeral(engine.usScore, color: DD.Colors.accentWin, height: numberHeight)
                         teamLabel(.us)
-                        modeChip
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.bottom, 2)
-                    .contentShape(Rectangle())
+
+                    Spacer(minLength: 2)
+                    modeChip
                 }
-                .buttonStyle(.plain)
+                .frame(width: geo.size.width, height: geo.size.height)
+
+                // Tap zones sit over everything and split at the net: top half
+                // scores them, bottom half scores us.
+                VStack(spacing: 0) {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { tap(.them) }
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { tap(.us) }
+                }
             }
         }
         .ignoresSafeArea()
@@ -59,16 +60,13 @@ struct ScoringFaceView: View {
         )
     }
 
-    /// 80pt scoreboard numeral, with the font's line-height whitespace pulled
-    /// back (negative vertical padding) so the visible digit fills more of the
-    /// space. minimumScaleFactor keeps two-digit scores fitting on any watch.
-    private func numeral(_ value: Int, color: Color) -> some View {
+    private func numeral(_ value: Int, color: Color, height: CGFloat) -> some View {
         Text("\(value)")
             .font(DD.Fonts.watchScore)
             .foregroundStyle(color)
             .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .padding(.vertical, -12)
+            .minimumScaleFactor(0.4)
+            .frame(height: height)
     }
 
     private func teamLabel(_ team: Team) -> some View {
