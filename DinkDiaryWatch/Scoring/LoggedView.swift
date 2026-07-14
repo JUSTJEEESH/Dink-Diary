@@ -1,28 +1,33 @@
 import SwiftUI
 
-/// Between-games hub. Shows the running record and a clear choice: play the next
-/// game, or end the session. Explicit buttons (rather than a silent auto-advance)
-/// guarantee a reliable way out, since the scoring face is all tap targets.
+/// The "logged" beat, matched to the mock: an optic check badge, "Logged.", the
+/// specific game just recorded, then Next game (optic) with End session below.
+/// Auto-advances to the next game after ~2s; End session cancels that.
 struct LoggedView: View {
-    let record: (wins: Int, losses: Int)
-    let gameCount: Int
+    let lastGame: WatchGame?
+    let gameNumber: Int
     var onNext: () -> Void
     var onEnd: () -> Void
 
     var body: some View {
         ScrollView {
             VStack(spacing: DD.Spacing.cardGap) {
-                Text("Logged.")
-                    .font(DD.Fonts.headline)
+                Image(systemName: "checkmark")
+                    .font(Font.system(size: 30, weight: .bold))
                     .foregroundStyle(DD.Colors.accentWin)
+                    .frame(width: 72, height: 72)
+                    .background(DD.Colors.accentWin.opacity(0.16), in: Circle())
 
-                Text("\(record.wins)-\(record.losses)")
-                    .font(DD.Fonts.watchConfirm)
-                    .foregroundStyle(record.wins >= record.losses ? DD.Colors.accentWin : DD.Colors.textPrimary)
+                Text("Logged.")
+                    .font(DD.Fonts.title3)
+                    .foregroundStyle(DD.Colors.textPrimary)
 
-                Text(gameCount == 1 ? "1 game" : "\(gameCount) games")
-                    .font(DD.Fonts.caption)
-                    .foregroundStyle(DD.Colors.textSecondary)
+                if let detail = detailLine {
+                    Text(detail)
+                        .font(DD.Fonts.footnote)
+                        .foregroundStyle(DD.Colors.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
 
                 Button(action: onNext) {
                     Text("Next game")
@@ -35,14 +40,31 @@ struct LoggedView: View {
                 Button(action: onEnd) {
                     Text("End session")
                         .font(DD.Fonts.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
+                        .foregroundStyle(DD.Colors.textSecondary)
                 }
-                .buttonStyle(DDPillButtonStyle(variant: .secondary))
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, DD.Spacing.rowGap)
             .padding(.vertical, DD.Spacing.cardGap)
         }
         .background(DD.Colors.watchCanvas)
+        .task {
+            try? await Task.sleep(for: .seconds(2))
+            onNext()
+        }
+    }
+
+    private var detailLine: String? {
+        guard let game = lastGame else { return nil }
+        let result = game.didWin ? "W" : "L"
+        let score = "\(game.myScore)-\(game.theirScore)"
+        let withText: String
+        if let name = game.partnerName, !name.isEmpty {
+            let first = name.split(separator: " ").first.map(String.init) ?? name
+            withText = " with \(first)"
+        } else {
+            withText = ""
+        }
+        return "\(result) \(score)\(withText) \u{00B7} game \(gameNumber)"
     }
 }
