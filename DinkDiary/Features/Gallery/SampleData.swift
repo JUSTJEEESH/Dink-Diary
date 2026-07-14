@@ -83,6 +83,20 @@ enum SampleData {
             (11, 6, sarah, [dave, jen]),
             (11, 3, dave, [mike, jen]),
         ])
+
+        // A DUPR history, trending up over the year (doubles + a little singles).
+        let doubles: [(Double, Int)] = [(3.412, 330), (3.501, 210), (3.548, 120), (3.622, 40), (3.671, 6)]
+        for (value, daysAgo) in doubles {
+            let entry = RatingEntry(value: value, isSingles: false,
+                                    recordedAt: Date.now.addingTimeInterval(TimeInterval(-daysAgo * 86_400)))
+            context.insert(entry)
+        }
+        let singles: [(Double, Int)] = [(3.201, 150), (3.276, 45)]
+        for (value, daysAgo) in singles {
+            let entry = RatingEntry(value: value, isSingles: true,
+                                    recordedAt: Date.now.addingTimeInterval(TimeInterval(-daysAgo * 86_400)))
+            context.insert(entry)
+        }
     }
 
     private static func seedSession(

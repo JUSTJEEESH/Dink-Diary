@@ -188,6 +188,9 @@ struct SessionsHomeView: View {
         for court in (try? context.fetch(FetchDescriptor<Court>())) ?? [] {
             context.delete(court)
         }
+        for rating in (try? context.fetch(FetchDescriptor<RatingEntry>())) ?? [] {
+            context.delete(rating)
+        }
         try? context.save()
     }
     #endif

@@ -6,6 +6,7 @@ struct InsightsHomeView: View {
     @Environment(PremiumStore.self) private var premium
     @Query private var allGames: [Game]
     @Query private var allSessions: [Session]
+    @Query(sort: \RatingEntry.recordedAt) private var ratings: [RatingEntry]
     @State private var showingPaywall = false
     @State private var showingRecap = false
     @State private var celebrating: Milestone?
@@ -30,6 +31,7 @@ struct InsightsHomeView: View {
                     ScrollView {
                         VStack(spacing: DD.Spacing.cardGap) {
                             recapEntry
+                            ratingEntry
                             if !storylines.isEmpty { storylinesSection }
                             if !milestones.isEmpty { milestonesSection }
 
@@ -63,6 +65,8 @@ struct InsightsHomeView: View {
             .navigationDestination(for: String.self) { route in
                 if route == "moments" {
                     MilestonesView(milestones: milestones)
+                } else if route == "rating" {
+                    RatingDetailView()
                 }
             }
             .sheet(isPresented: $showingPaywall) {
@@ -115,6 +119,17 @@ struct InsightsHomeView: View {
                 RoundedRectangle(cornerRadius: DD.Radius.sessionCard, style: .continuous)
                     .strokeBorder(DD.Colors.hairline, lineWidth: 1)
             )
+        }
+        .buttonStyle(DDCardButtonStyle())
+    }
+
+    private var doublesRatings: [RatingEntry] {
+        ratings.filter { !$0.isSingles }
+    }
+
+    private var ratingEntry: some View {
+        NavigationLink(value: "rating") {
+            RatingCard(entries: doublesRatings)
         }
         .buttonStyle(DDCardButtonStyle())
     }

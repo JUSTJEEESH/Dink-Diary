@@ -74,8 +74,9 @@ $ = monetizable.
 
 ## 4. Be the hub (display, never compete)
 
-- ★ **DUPR display integration** — show your rating and its trend graph;
-  display-only, never a competing rating. Absorbs DUPR's pull without becoming it.
+- ★ **DUPR display integration** (done, manual entry) — log your DUPR and watch
+  it trend on a chart; a card on Insights, doubles and singles, display only,
+  never a competing rating. Official API sync is a later add.
 - **Partner photos from Contacts** — richer avatars, real faces.
 - **"Your courts" map** (done) — a map of everywhere you've played, tinted pins by
   record, tap through to a court; each court renameable with a photo that becomes

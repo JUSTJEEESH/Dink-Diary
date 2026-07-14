@@ -12,6 +12,7 @@ enum DataStore {
         Court.self,
         Session.self,
         Game.self,
+        RatingEntry.self,
     ])
 
     /// Cached premium flag PremiumStore writes; read here to decide sync at launch.
