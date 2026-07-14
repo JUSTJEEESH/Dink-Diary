@@ -1,8 +1,10 @@
 import SwiftUI
 
-/// The scoring face, matched to the locked mock: THEM on top, US on bottom, a
-/// net divider between them, a solid optic serve pill pinned top, a solid mode
-/// chip pinned bottom. You tap the side that WON the rally; the engine applies
+/// The scoring face, matched to the locked mock. Everything sits in one vertical
+/// flow (no pinned overlays, which collided with the labels on a real watch):
+/// top half is THEM (serve pill, label, numeral), bottom half is US (numeral,
+/// label, mode chip), split by the net line. Each half fills its space and is a
+/// single tap target: you tap the side that WON the rally and the engine applies
 /// side-out or rally rules. The serving team carries an optic dot by its label.
 /// Long-press anywhere to undo. Canvas is true black.
 struct ScoringFaceView: View {
@@ -14,7 +16,18 @@ struct ScoringFaceView: View {
             DD.Colors.watchCanvas.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                half(team: .them, score: engine.themScore, color: DD.Colors.textPrimary, labelOnTop: true)
+                Button {
+                    tap(.them)
+                } label: {
+                    VStack(spacing: 3) {
+                        servePill
+                        teamLabel(.them)
+                        numeral(engine.themScore, color: DD.Colors.textPrimary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
 
                 // Net line (the mock's divider). The kitchen-line motif reads as
                 // the net here; see note to the design owner.
@@ -22,37 +35,35 @@ struct ScoringFaceView: View {
                     .padding(.horizontal, DD.Spacing.rowGap)
                     .allowsHitTesting(false)
 
-                half(team: .us, score: engine.usScore, color: DD.Colors.accentWin, labelOnTop: false)
+                Button {
+                    tap(.us)
+                } label: {
+                    VStack(spacing: 3) {
+                        numeral(engine.usScore, color: DD.Colors.accentWin)
+                        teamLabel(.us)
+                        modeChip
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
-
-            VStack {
-                servePill
-                Spacer()
-                modeChip
-            }
-            .padding(.vertical, 4)
-            .allowsHitTesting(false)
+            .padding(.vertical, 2)
         }
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5).onEnded { _ in undo() }
         )
     }
 
-    private func half(team: Team, score: Int, color: Color, labelOnTop: Bool) -> some View {
-        Button {
-            tap(team)
-        } label: {
-            VStack(spacing: 2) {
-                if labelOnTop { teamLabel(team) }
-                Text("\(score)")
-                    .font(DD.Fonts.watchScore)
-                    .foregroundStyle(color)
-                if !labelOnTop { teamLabel(team) }
-            }
+    private func numeral(_ value: Int, color: Color) -> some View {
+        // Fill the leftover height in the half and scale the glyph to fit, so
+        // the numeral is as big as possible without ever overrunning the labels.
+        Text("\(value)")
+            .font(DD.Fonts.watchScore)
+            .foregroundStyle(color)
+            .lineLimit(1)
+            .minimumScaleFactor(0.4)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 
     private func teamLabel(_ team: Team) -> some View {
@@ -72,8 +83,8 @@ struct ScoringFaceView: View {
             .textCase(.uppercase)
             .tracking(0.5)
             .foregroundStyle(DD.Colors.surface)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 3)
             .background(DD.Colors.accentWin, in: Capsule())
     }
 
@@ -82,8 +93,8 @@ struct ScoringFaceView: View {
             .font(DD.Fonts.caption)
             .tracking(0.5)
             .foregroundStyle(DD.Colors.textSecondary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 3)
             .background(DD.Colors.surfaceElevated, in: Capsule())
     }
 
