@@ -1,0 +1,25 @@
+// Dink Diary — shared build settings for every target.
+// THE two lines you edit once, on your Mac, before the first device build:
+//   1. DD_BUNDLE_ID_BASE  — match the reverse-DNS prefix your other apps use
+//   2. DEVELOPMENT_TEAM   — your 10-character Team ID (Xcode > Settings > Accounts,
+//      select your team; the ID is shown on the right)
+
+DD_BUNDLE_ID_BASE = com.joshgreendesign.dinkdiary
+DEVELOPMENT_TEAM =
+
+CODE_SIGN_STYLE = Automatic
+SWIFT_VERSION = 5.0
+MARKETING_VERSION = 0.1.0
+CURRENT_PROJECT_VERSION = 1
+PRODUCT_NAME = $(TARGET_NAME)
+
+GENERATE_INFOPLIST_FILE = YES
+INFOPLIST_KEY_CFBundleDisplayName = Dink Diary
+
+// Design tokens are accessed through the DD namespace only; keep Xcode from
+// generating asset color symbols that would collide in .foregroundStyle(...).
+ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO
+
+ENABLE_USER_SCRIPT_SANDBOXING = YES
+LOCALIZATION_PREFERS_STRING_CATALOGS = YES
+SWIFT_EMIT_LOC_STRINGS = YES

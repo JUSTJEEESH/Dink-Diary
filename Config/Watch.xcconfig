@@ -1,0 +1,23 @@
+#include "Shared.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(DD_BUNDLE_ID_BASE).watchkitapp
+SDKROOT = watchos
+WATCHOS_DEPLOYMENT_TARGET = 10.0
+TARGETED_DEVICE_FAMILY = 4
+SUPPORTED_PLATFORMS = watchos watchsimulator
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
+SKIP_INSTALL = YES
+
+CODE_SIGN_ENTITLEMENTS = Config/DinkDiaryWatch.entitlements
+
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+
+// Merged with the generated Info.plist; carries keys (arrays) that
+// INFOPLIST_KEY_ build settings cannot express, e.g. WKBackgroundModes.
+INFOPLIST_FILE = Config/WatchInfo.plist
+
+INFOPLIST_KEY_WKApplication = YES
+INFOPLIST_KEY_WKCompanionAppBundleIdentifier = $(DD_BUNDLE_ID_BASE)
+
+INFOPLIST_KEY_NSHealthShareUsageDescription = Dink Diary reads heart rate and calories to sum up your sessions.
+INFOPLIST_KEY_NSHealthUpdateUsageDescription = Dink Diary records your games as pickleball workouts.
