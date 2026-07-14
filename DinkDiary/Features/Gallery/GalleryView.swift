@@ -147,7 +147,7 @@ struct GalleryView: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: DD.Spacing.rowGap) {
                     Text("5-2")
-                        .font(Font.system(size: 48, weight: .bold, design: .rounded).monospacedDigit())
+                        .font(DD.Fonts.sessionRecord)
                         .foregroundStyle(DD.Colors.accentWin)
                     Text("7 games")
                         .font(DD.Fonts.footnote)

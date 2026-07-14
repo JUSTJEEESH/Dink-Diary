@@ -31,3 +31,19 @@ struct DDPressStyle: ButtonStyle {
             )
     }
 }
+
+/// Press style for tappable cards and rows: scale only, preserving the card's
+/// own background. Use `scale: DD.Motion.rowPressScale` on rows.
+struct DDCardButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var scale: CGFloat = DD.Motion.pressScale
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? scale : 1)
+            .animation(
+                .easeOut(duration: configuration.isPressed ? DD.Motion.pressIn : DD.Motion.pressOut),
+                value: configuration.isPressed
+            )
+    }
+}

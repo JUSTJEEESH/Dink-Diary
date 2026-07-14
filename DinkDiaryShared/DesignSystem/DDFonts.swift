@@ -9,6 +9,8 @@ extension DD {
         static let statLarge = Font.system(size: 64, weight: .bold, design: .rounded).monospacedDigit()
         static let statMedium = Font.system(size: 44, weight: .bold, design: .rounded).monospacedDigit()
         static let statSmall = Font.system(size: 28, weight: .bold, design: .rounded).monospacedDigit()
+        /// Session record as it appears in a feed card (statLarge, size-fit to 48).
+        static let sessionRecord = Font.system(size: 48, weight: .bold, design: .rounded).monospacedDigit()
         /// Small rounded-bold numerals inside badges and chips.
         static let statBadge = Font.system(size: 13, weight: .bold, design: .rounded).monospacedDigit()
 
