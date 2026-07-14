@@ -13,6 +13,10 @@ struct InsightsHomeView: View {
         MilestoneEngine.achieved(games: allGames, sessions: allSessions)
     }
 
+    private var storylines: [Storyline] {
+        StorylineEngine.seasonStorylines(in: allGames, now: .now)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -24,6 +28,7 @@ struct InsightsHomeView: View {
                     ScrollView {
                         VStack(spacing: DD.Spacing.cardGap) {
                             recapEntry
+                            if !storylines.isEmpty { storylinesSection }
                             if !milestones.isEmpty { milestonesSection }
 
                             streakCard
@@ -92,6 +97,14 @@ struct InsightsHomeView: View {
             )
         }
         .buttonStyle(DDCardButtonStyle())
+    }
+
+    private var storylinesSection: some View {
+        VStack(spacing: DD.Spacing.cardGap) {
+            ForEach(storylines) { story in
+                StorylineCard(story: story)
+            }
+        }
     }
 
     private var milestonesSection: some View {
@@ -260,6 +273,44 @@ struct InsightsHomeView: View {
                 .foregroundStyle(DD.Colors.textSecondary)
         }
         .padding(DD.Spacing.gutter)
+    }
+}
+
+/// A warm, auto-written storyline about one of your people. Headline tinted by
+/// tone; body in the app's voice. A losing record reads as a rivalry.
+struct StorylineCard: View {
+    let story: Storyline
+
+    private var tint: Color {
+        switch story.tone {
+        case .chemistry: return DD.Colors.accentWin
+        case .rivalry: return DD.Colors.accentLoss
+        case .even: return DD.Colors.streak
+        case .fresh: return DD.Colors.textSecondary
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DD.Spacing.rowGap) {
+            Text(story.headline)
+                .font(DD.Fonts.caption)
+                .textCase(.uppercase)
+                .tracking(1)
+                .foregroundStyle(tint)
+            Text(story.body)
+                .font(DD.Fonts.body)
+                .foregroundStyle(DD.Colors.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(DD.Spacing.cardPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DD.Colors.surfaceElevated, in: .rect(cornerRadius: DD.Radius.sessionCard, style: .continuous))
+        .overlay(alignment: .leading) {
+            Rectangle()
+                .fill(tint)
+                .frame(width: 3)
+                .clipShape(.rect(cornerRadius: 1.5))
+        }
     }
 }
 

@@ -42,9 +42,7 @@ struct PartnerDetailView: View {
                     StatTile(label: "Last played", value: lastPlayedText)
                 }
 
-                Text(chemistryLine)
-                    .font(DD.Fonts.body)
-                    .foregroundStyle(DD.Colors.textSecondary)
+                storylineCard
                     .padding(.top, DD.Spacing.rowGap)
             }
             .padding(.horizontal, DD.Spacing.gutter)
@@ -74,17 +72,20 @@ struct PartnerDetailView: View {
         lastPlayed.map { $0.formatted(.dateTime.month(.abbreviated).day()) }
     }
 
-    private var chemistryLine: String {
-        let total = together.wins + together.losses
-        if total == 0 {
-            return "You two haven't teamed up yet. First game together starts the chemistry test."
+    private var storyline: Storyline {
+        StorylineEngine.narrative(for: player, in: allGames, now: .now)
+    }
+
+    private var storylineCard: some View {
+        VStack(alignment: .leading, spacing: DD.Spacing.rowGap) {
+            Text(storyline.headline).ddCaption()
+            Text(storyline.body)
+                .font(DD.Fonts.body)
+                .foregroundStyle(DD.Colors.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        if together.wins > together.losses {
-            return "The chemistry is real."
-        }
-        if together.wins == together.losses {
-            return "Even every time out; the rivalry with the whole court continues."
-        }
-        return "Still writing your story together."
+        .padding(DD.Spacing.cardPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DD.Colors.surfaceElevated, in: .rect(cornerRadius: DD.Radius.sessionCard, style: .continuous))
     }
 }
