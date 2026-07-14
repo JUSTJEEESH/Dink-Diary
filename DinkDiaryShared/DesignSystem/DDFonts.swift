@@ -26,6 +26,10 @@ extension DD {
         // Watch styles (actual pt, 46mm)
         static let watchScore = Font.system(size: 80, weight: .heavy, design: .rounded).monospacedDigit()
         static let watchConfirm = Font.system(size: 55, weight: .heavy, design: .rounded).monospacedDigit()
+        /// Oversized base for the live scoring numerals; paired with a filling
+        /// frame + minimumScaleFactor it scales down to fill each tap-half, so
+        /// the score is as large as the watch allows.
+        static let watchScoreFill = Font.system(size: 140, weight: .heavy, design: .rounded).monospacedDigit()
     }
 }
 

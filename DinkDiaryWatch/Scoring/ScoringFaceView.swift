@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// The scoring face, matched to the locked mock. Everything sits in one vertical
-/// flow (no pinned overlays, which collided with the labels on a real watch):
-/// top half is THEM (serve pill, label, numeral), bottom half is US (numeral,
-/// label, mode chip), split by the net line. Each half fills its space and is a
-/// single tap target: you tap the side that WON the rally and the engine applies
-/// side-out or rally rules. The serving team carries an optic dot by its label.
-/// Long-press anywhere to undo. Canvas is true black.
+/// The scoring face, built for glanceability: two giant numbers, one per half,
+/// each filling its space so the score reads at arm's length in full sun. Color
+/// is the identity, the bright optic number is always you (bottom), the warm
+/// white one is them (top). A compact serve pill sits above, a mode chip below,
+/// split by the net line. Each half is one big tap target: tap the side that
+/// WON the rally and the engine applies side-out or rally rules. Long-press
+/// anywhere to undo. Canvas is true black.
 struct ScoringFaceView: View {
     @Binding var engine: ScoreEngine
     var onGameOver: () -> Void
@@ -19,9 +19,8 @@ struct ScoringFaceView: View {
                 Button {
                     tap(.them)
                 } label: {
-                    VStack(spacing: 3) {
+                    VStack(spacing: 2) {
                         servePill
-                        teamLabel(.them)
                         numeral(engine.themScore, color: DD.Colors.textPrimary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -38,9 +37,8 @@ struct ScoringFaceView: View {
                 Button {
                     tap(.us)
                 } label: {
-                    VStack(spacing: 3) {
+                    VStack(spacing: 2) {
                         numeral(engine.usScore, color: DD.Colors.accentWin)
-                        teamLabel(.us)
                         modeChip
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -48,33 +46,22 @@ struct ScoringFaceView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.vertical, 2)
+            .padding(.horizontal, 2)
         }
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5).onEnded { _ in undo() }
         )
     }
 
+    /// Fills the half and scales the glyph down from an oversized base, so the
+    /// number is as large as the space allows on any watch.
     private func numeral(_ value: Int, color: Color) -> some View {
-        // Fill the leftover height in the half and scale the glyph to fit, so
-        // the numeral is as big as possible without ever overrunning the labels.
         Text("\(value)")
-            .font(DD.Fonts.watchScore)
+            .font(DD.Fonts.watchScoreFill)
             .foregroundStyle(color)
             .lineLimit(1)
-            .minimumScaleFactor(0.4)
+            .minimumScaleFactor(0.2)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private func teamLabel(_ team: Team) -> some View {
-        HStack(spacing: 4) {
-            if engine.servingTeam == team {
-                Circle()
-                    .fill(DD.Colors.accentWin)
-                    .frame(width: 5, height: 5)
-            }
-            Text(team == .us ? "US" : "THEM").ddCaption()
-        }
     }
 
     private var servePill: some View {
@@ -99,7 +86,8 @@ struct ScoringFaceView: View {
     }
 
     private var serveLabel: String {
-        engine.mode == .sideOut ? "SRV \(engine.serverNumber)" : "SRV"
+        let who = engine.servingTeam == .us ? "YOU" : "THEM"
+        return engine.mode == .sideOut ? "\(who) SRV \(engine.serverNumber)" : "\(who) SRV"
     }
 
     private func tap(_ team: Team) {
