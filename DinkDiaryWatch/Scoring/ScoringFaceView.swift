@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// The scoring face, matched to the mock and filling the entire screen. The
-/// whole view ignores the safe area so nothing floats in a margin, the way a
-/// full-screen watch app should; the system still draws the time over the top
-/// corner. Top to bottom: serve pill, THEM, its number, the net line, our
-/// number, US, mode chip. The serving team carries an optic dot by its label.
-/// Tap a side and it scores, one tap, immediately. Color is the identity: the
-/// bright optic number is always you (bottom). Long-press anywhere to undo.
+/// The scoring face, matched to the mock and filling the whole screen. Ignores
+/// the safe area so nothing floats in a margin; the system draws the time over
+/// the top corner. Symmetric around the net: serve pill and THEM at the top
+/// edge, our number and them number hugging the net, US and mode chip at the
+/// bottom edge. The serving team carries an optic dot by its label. Tap a side
+/// and it scores, one tap, immediately. Color is the identity: the bright optic
+/// number is always you (bottom). Long-press anywhere to undo.
 struct ScoringFaceView: View {
     @Binding var engine: ScoreEngine
     var onGameOver: () -> Void
@@ -19,13 +19,14 @@ struct ScoringFaceView: View {
                 Button {
                     tap(.them)
                 } label: {
-                    VStack(spacing: 2) {
+                    VStack(spacing: 3) {
                         servePill
                         teamLabel(.them)
+                        Spacer(minLength: 0)
                         numeral(engine.themScore, color: DD.Colors.textPrimary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, 4)
+                    .padding(.top, 2)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -39,13 +40,14 @@ struct ScoringFaceView: View {
                 Button {
                     tap(.us)
                 } label: {
-                    VStack(spacing: 2) {
+                    VStack(spacing: 3) {
                         numeral(engine.usScore, color: DD.Colors.accentWin)
+                        Spacer(minLength: 0)
                         teamLabel(.us)
                         modeChip
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.bottom, 4)
+                    .padding(.bottom, 2)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -57,15 +59,16 @@ struct ScoringFaceView: View {
         )
     }
 
-    /// Fills the leftover height in its half and scales the glyph down from an
-    /// oversized base, so the number is as large as the space allows.
+    /// 80pt scoreboard numeral, with the font's line-height whitespace pulled
+    /// back (negative vertical padding) so the visible digit fills more of the
+    /// space. minimumScaleFactor keeps two-digit scores fitting on any watch.
     private func numeral(_ value: Int, color: Color) -> some View {
         Text("\(value)")
-            .font(DD.Fonts.watchScoreFill)
+            .font(DD.Fonts.watchScore)
             .foregroundStyle(color)
             .lineLimit(1)
-            .minimumScaleFactor(0.2)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .minimumScaleFactor(0.5)
+            .padding(.vertical, -12)
     }
 
     private func teamLabel(_ team: Team) -> some View {
