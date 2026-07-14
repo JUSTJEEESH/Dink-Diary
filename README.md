@@ -20,8 +20,11 @@ Then, once:
    - `DD_BUNDLE_ID_BASE` — change to the reverse-DNS prefix your other apps use, ending in `.dinkdiary` (check any existing app in App Store Connect if unsure).
    - `DEVELOPMENT_TEAM` — your 10-character Team ID (Xcode > Settings > Accounts > your team; the ID is in the team details).
    Commit that change so it sticks.
-2. Select the **DinkDiary** scheme, choose your iPhone, press **Run**. Automatic signing registers the App IDs and capabilities. The watch app installs on the paired watch automatically; there is also a **DinkDiaryWatch** scheme to run it directly.
-3. **WeatherKit only:** if signing complains about WeatherKit, enable it manually on the app's App ID at [developer.apple.com](https://developer.apple.com/account/resources/identifiers/list) (Identifiers > your app > check WeatherKit > Save). It can take up to 30 minutes to start returning data. Weather features land in a later milestone, so this can wait.
+2. Select the **DinkDiary** scheme, choose your iPhone, press **Run**. The watch app installs on the paired watch automatically; there is also a **DinkDiaryWatch** scheme to run it directly.
+
+The app requests no special capabilities yet, so signing is a bare profile that just works. HealthKit, WeatherKit, and iCloud are added back in the milestones that use them (M3, M4, M6); each will note any one-time portal step at that point.
+
+**No signing at all:** to see the app immediately without a device, team, or Apple account, pick an **iPhone 16 Simulator** as the run destination. The Simulator needs no code signing.
 
 ## Every cycle after that
 

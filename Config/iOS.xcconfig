@@ -7,7 +7,11 @@ TARGETED_DEVICE_FAMILY = 1
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
 
-CODE_SIGN_ENTITLEMENTS = Config/DinkDiary.entitlements
+// No entitlements yet. Capabilities are added back in the milestone that first
+// uses them, so early builds sign with a bare profile and just run:
+//   HealthKit -> M3, WeatherKit -> M4, iCloud/CloudKit + Push -> M6.
+// The dormant Config/DinkDiary.entitlements keeps the values ready to re-enable.
+// CODE_SIGN_ENTITLEMENTS = Config/DinkDiary.entitlements
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
