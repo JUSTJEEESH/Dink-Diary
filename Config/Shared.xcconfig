@@ -5,7 +5,7 @@
 //      select your team; the ID is shown on the right)
 
 DD_BUNDLE_ID_BASE = com.joshgreendesign.dinkdiary
-DEVELOPMENT_TEAM =
+DEVELOPMENT_TEAM = RB657RW2UW
 
 CODE_SIGN_STYLE = Automatic
 SWIFT_VERSION = 5.0
