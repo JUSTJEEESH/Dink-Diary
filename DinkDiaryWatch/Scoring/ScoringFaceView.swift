@@ -1,12 +1,11 @@
 import SwiftUI
 
-/// The scoring face, built for glanceability: two giant numbers, one per half,
-/// each filling its space so the score reads at arm's length in full sun. Color
-/// is the identity, the bright optic number is always you (bottom), the warm
-/// white one is them (top). A compact serve pill sits above, a mode chip below,
-/// split by the net line. Each half is one big tap target: tap the side that
-/// WON the rally and the engine applies side-out or rally rules. Long-press
-/// anywhere to undo. Canvas is true black.
+/// The scoring face. A dead-simple scoreboard: tap a side and that side scores,
+/// one tap, immediately. Matched to the mock: serve pill on top, THEM over its
+/// number, the net line, our number over US, mode chip at the bottom. The
+/// serving team carries an optic dot by its label. Color is the identity: the
+/// bright optic number is always you (bottom). Long-press anywhere to undo.
+/// Canvas is true black.
 struct ScoringFaceView: View {
     @Binding var engine: ScoreEngine
     var onGameOver: () -> Void
@@ -21,6 +20,7 @@ struct ScoringFaceView: View {
                 } label: {
                     VStack(spacing: 2) {
                         servePill
+                        teamLabel(.them)
                         numeral(engine.themScore, color: DD.Colors.textPrimary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -39,6 +39,7 @@ struct ScoringFaceView: View {
                 } label: {
                     VStack(spacing: 2) {
                         numeral(engine.usScore, color: DD.Colors.accentWin)
+                        teamLabel(.us)
                         modeChip
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -53,8 +54,8 @@ struct ScoringFaceView: View {
         )
     }
 
-    /// Fills the half and scales the glyph down from an oversized base, so the
-    /// number is as large as the space allows on any watch.
+    /// Fills the leftover height in the half and scales the glyph down from an
+    /// oversized base, so the number is as large as the space allows.
     private func numeral(_ value: Int, color: Color) -> some View {
         Text("\(value)")
             .font(DD.Fonts.watchScoreFill)
@@ -62,6 +63,17 @@ struct ScoringFaceView: View {
             .lineLimit(1)
             .minimumScaleFactor(0.2)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func teamLabel(_ team: Team) -> some View {
+        HStack(spacing: 4) {
+            if engine.servingTeam == team {
+                Circle()
+                    .fill(DD.Colors.accentWin)
+                    .frame(width: 5, height: 5)
+            }
+            Text(team == .us ? "US" : "THEM").ddCaption()
+        }
     }
 
     private var servePill: some View {
@@ -86,12 +98,11 @@ struct ScoringFaceView: View {
     }
 
     private var serveLabel: String {
-        let who = engine.servingTeam == .us ? "YOU" : "THEM"
-        return engine.mode == .sideOut ? "\(who) SRV \(engine.serverNumber)" : "\(who) SRV"
+        engine.mode == .sideOut ? "SRV \(engine.serverNumber)" : "SRV"
     }
 
     private func tap(_ team: Team) {
-        engine.rallyWon(by: team)
+        engine.addPoint(to: team)
         WatchHaptics.tap()
         if engine.isGameOver {
             WatchHaptics.confirm()

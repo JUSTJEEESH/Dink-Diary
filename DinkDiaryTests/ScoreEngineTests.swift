@@ -42,6 +42,30 @@ final class ScoreEngineTests: XCTestCase {
         XCTAssertEqual(engine.themScore, 2)
     }
 
+    // MARK: Manual scoreboard (the watch face)
+
+    /// Every tap scores immediately for the tapped team; the scorer serves next.
+    func testAddPointScoresEveryTap() {
+        var engine = ScoreEngine(mode: .sideOut, servingTeam: .us)
+        engine.addPoint(to: .them)
+        XCTAssertEqual(engine.themScore, 1)
+        XCTAssertEqual(engine.servingTeam, .them)
+        engine.addPoint(to: .them)
+        XCTAssertEqual(engine.themScore, 2)
+        engine.addPoint(to: .us)
+        XCTAssertEqual(engine.usScore, 1)
+        XCTAssertEqual(engine.servingTeam, .us)
+    }
+
+    func testAddPointUndo() {
+        var engine = ScoreEngine(mode: .rally, servingTeam: .us)
+        engine.addPoint(to: .us)
+        engine.addPoint(to: .them)
+        XCTAssertTrue(engine.undo())
+        XCTAssertEqual(engine.usScore, 1)
+        XCTAssertEqual(engine.themScore, 0)
+    }
+
     // MARK: Undo
 
     func testUndoReversesAnyOutcome() {

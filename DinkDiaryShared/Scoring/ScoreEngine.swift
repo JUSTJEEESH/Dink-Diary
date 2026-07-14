@@ -41,6 +41,20 @@ struct ScoreEngine: Codable, Equatable {
 
     // MARK: Mutate
 
+    /// Manual scoreboard entry: give a point directly to a team, every tap. The
+    /// team that scores serves next; if they weren't already serving, they take
+    /// serve as first server. This is what the watch face uses so one tap always
+    /// scores. (`rallyWon` keeps the full rules engine for any future auto mode.)
+    mutating func addPoint(to team: Team) {
+        guard !isGameOver else { return }
+        pushHistory()
+        if team != state.servingTeam {
+            state.servingTeam = team
+            state.serverNumber = 1
+        }
+        score(team)
+    }
+
     mutating func rallyWon(by team: Team) {
         guard !isGameOver else { return }
         pushHistory()
