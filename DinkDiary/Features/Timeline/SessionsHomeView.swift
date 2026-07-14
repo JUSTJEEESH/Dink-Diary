@@ -24,6 +24,13 @@ struct SessionsHomeView: View {
 
                     PillButton(title: "Start a session") { startSession() }
 
+                    if let memory = onThisDay {
+                        NavigationLink(value: memory) {
+                            OnThisDayCard(session: memory)
+                        }
+                        .buttonStyle(DDCardButtonStyle())
+                    }
+
                     if displayedSessions.isEmpty {
                         emptyState.padding(.top, 40)
                     } else {
@@ -120,6 +127,22 @@ struct SessionsHomeView: View {
             .background(DD.Colors.surfaceElevated, in: .rect(cornerRadius: DD.Radius.sessionCard, style: .continuous))
         }
         .buttonStyle(DDCardButtonStyle())
+    }
+
+    /// A session from a previous year on today's calendar date (within a day).
+    private var onThisDay: Session? {
+        let calendar = Calendar.current
+        let now = Date.now
+        let month = calendar.component(.month, from: now)
+        let day = calendar.component(.day, from: now)
+        let thisYear = calendar.component(.year, from: now)
+        return displayedSessions
+            .filter { session in
+                calendar.component(.year, from: session.startedAt) < thisYear
+                    && calendar.component(.month, from: session.startedAt) == month
+                    && abs(calendar.component(.day, from: session.startedAt) - day) <= 1
+            }
+            .max { $0.startedAt < $1.startedAt }
     }
 
     private var allGamesNewestFirst: [Game] {

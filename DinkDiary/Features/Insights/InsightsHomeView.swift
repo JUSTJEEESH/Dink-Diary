@@ -5,7 +5,13 @@ import SwiftData
 struct InsightsHomeView: View {
     @Environment(PremiumStore.self) private var premium
     @Query private var allGames: [Game]
+    @Query private var allSessions: [Session]
     @State private var showingPaywall = false
+    @State private var showingRecap = false
+
+    private var milestones: [Milestone] {
+        MilestoneEngine.achieved(games: allGames, sessions: allSessions)
+    }
 
     var body: some View {
         NavigationStack {
@@ -17,6 +23,9 @@ struct InsightsHomeView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: DD.Spacing.cardGap) {
+                            recapEntry
+                            if !milestones.isEmpty { milestonesSection }
+
                             streakCard
                             chemistryCard
                             nemesisCard
@@ -36,9 +45,75 @@ struct InsightsHomeView: View {
             }
             .navigationTitle("Insights")
             .toolbarBackground(DD.Colors.surface, for: .navigationBar)
+            .navigationDestination(for: String.self) { route in
+                if route == "moments" {
+                    MilestonesView(milestones: milestones)
+                }
+            }
             .sheet(isPresented: $showingPaywall) {
                 PaywallView()
                     .environment(premium)
+            }
+            .fullScreenCover(isPresented: $showingRecap) {
+                SeasonRecapView(stats: SeasonRecapEngine.currentStats(games: allGames, sessions: allSessions, now: .now))
+            }
+        }
+    }
+
+    private var recapEntry: some View {
+        Button {
+            showingRecap = true
+        } label: {
+            HStack(spacing: DD.Spacing.cardGap) {
+                Image(systemName: "sparkles")
+                    .font(Font.system(size: 22, weight: .bold))
+                    .foregroundStyle(DD.Colors.surface)
+                    .frame(width: 48, height: 48)
+                    .background(DD.Colors.accentWin, in: Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Your season")
+                        .font(DD.Fonts.title3)
+                        .foregroundStyle(DD.Colors.textPrimary)
+                    Text("The whole story, one tap.")
+                        .font(DD.Fonts.footnote)
+                        .foregroundStyle(DD.Colors.textSecondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(Font.system(size: 14, weight: .semibold))
+                    .foregroundStyle(DD.Colors.textSecondary)
+            }
+            .padding(DD.Spacing.cardPadding)
+            .frame(maxWidth: .infinity)
+            .background(DD.Gradients.trophy, in: .rect(cornerRadius: DD.Radius.sessionCard, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: DD.Radius.sessionCard, style: .continuous)
+                    .strokeBorder(DD.Colors.hairline, lineWidth: 1)
+            )
+        }
+        .buttonStyle(DDCardButtonStyle())
+    }
+
+    private var milestonesSection: some View {
+        InsightCard(title: "Moments") {
+            VStack(spacing: DD.Spacing.rowGap) {
+                ForEach(milestones.prefix(3)) { milestone in
+                    MilestoneRow(milestone: milestone)
+                }
+                if milestones.count > 3 {
+                    NavigationLink(value: "moments") {
+                        HStack {
+                            Text("See all \(milestones.count) moments")
+                                .font(DD.Fonts.footnote)
+                                .foregroundStyle(DD.Colors.accentWin)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(Font.system(size: 12, weight: .semibold))
+                                .foregroundStyle(DD.Colors.accentWin)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
             }
         }
     }
