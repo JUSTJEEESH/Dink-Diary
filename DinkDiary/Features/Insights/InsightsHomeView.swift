@@ -8,6 +8,7 @@ struct InsightsHomeView: View {
     @Query private var allSessions: [Session]
     @State private var showingPaywall = false
     @State private var showingRecap = false
+    @State private var celebrating: Milestone?
 
     private var milestones: [Milestone] {
         MilestoneEngine.achieved(games: allGames, sessions: allSessions)
@@ -61,6 +62,13 @@ struct InsightsHomeView: View {
             }
             .fullScreenCover(isPresented: $showingRecap) {
                 SeasonRecapView(stats: SeasonRecapEngine.currentStats(games: allGames, sessions: allSessions, now: .now))
+            }
+            .sheet(item: $celebrating) { milestone in
+                MilestoneCelebrationView(milestone: milestone)
+                    .presentationDetents([.medium])
+            }
+            .onAppear {
+                celebrating = MilestoneSeenStore.newlyAchieved(from: milestones).first
             }
         }
     }

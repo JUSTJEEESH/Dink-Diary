@@ -8,6 +8,7 @@ import SwiftUI
 struct ShareCardView: View {
     let session: Session
     let size: CGSize
+    var theme: ShareTheme = .midnight
 
     private var w: CGFloat { size.width }
     private var games: [Game] { session.gamesInOrder }
@@ -66,7 +67,7 @@ struct ShareCardView: View {
         }
         .padding(w * 0.075)
         .frame(width: size.width, height: size.height, alignment: .topLeading)
-        .background(DD.Gradients.shareCard)
+        .background(theme.gradient)
     }
 
     private var kitchenLine: some View {

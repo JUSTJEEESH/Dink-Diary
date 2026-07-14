@@ -88,10 +88,13 @@ $ = monetizable.
 
 ## 5. Share & growth ⚑
 
-- ⚑ **Share card themes** ($) — seasonal, court-photo, minimal, bold.
+- ⚑ **Share card themes** ($) (done) — Midnight, Optic, Minimal on every card;
+  seasonal and court-photo still to come.
 - ⚑ **Animated/video share cards** — a 5-second reel of the recap for Stories.
-- ⚑ **Head-to-head card** — "Sarah, we're 12-3, here's our story."
-- ⚑ **Milestone auto-share prompt** — celebrate the moment it happens.
+- ⚑ **Head-to-head card** (done) — "You and Sarah, 12-3, here's our story," from
+  the People detail page, with together/against and a warm tagline.
+- ⚑ **Milestone auto-share prompt** (done) — a quiet celebration pops the first
+  time a new moment lands, with one tap to share; old history never spams.
 - ⚑ **Referral / "who else has the app"** — subtle, warm.
 - ⚑ **App Clip** — a shared card opens a lightweight App Clip to try scoring.
 - **Live Photo / depth share cards** for iOS.
@@ -236,10 +239,13 @@ whole of §10 (iPad, Apple TV) is v2.
 1. **Year in Review + Milestones** — the moat, and viral. *(done)*
 2. **Rivalry & chemistry storylines** — warm auto-written narrative; pure moat,
    buildable now, feeds off the data the hero already surfaces. *(next)*
-3. **Platform superpowers** — widgets, Live Activity, Siri, complication.
+3. **Share & growth** — head-to-head cards, milestone auto-share, themes. *(done)*
 4. **DUPR display + Contacts photos + courts map** — become the hub.
 5. **Point-by-point opt-in + photo-per-session** — capture depth + memory.
-6. **Share themes + head-to-head + tag-a-partner** — growth loop.
+6. **Effortless logging** — who's here, quick re-log, doubles rotation.
+7. **Platform superpowers** — widgets, Live Activity, Siri, complication. *(owner
+   wants this later)*
+8. **Tag-a-partner** — the warm network effect.
 
 Everything here bends to the same rule: it should feel like your pickleball life,
 remembered beautifully. When in doubt, choose warmth over utility.

@@ -5,6 +5,7 @@ import UIKit
 struct SeasonRecapCard: View {
     let stats: SeasonStats
     let size: CGSize
+    var theme: ShareTheme = .midnight
 
     private var w: CGFloat { size.width }
 
@@ -62,7 +63,7 @@ struct SeasonRecapCard: View {
         }
         .padding(w * 0.075)
         .frame(width: size.width, height: size.height, alignment: .topLeading)
-        .background(DD.Gradients.shareCard)
+        .background(theme.gradient)
     }
 
     private func line(_ label: String, _ value: String, _ tint: Color) -> some View {
@@ -90,13 +91,15 @@ struct SeasonRecapShareSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     private let exportSize = CGSize(width: 1080, height: 1920)
+    @State private var theme: ShareTheme = .midnight
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: DD.Spacing.gutter) {
+            VStack(spacing: DD.Spacing.cardGap) {
+                SharePickerBar(theme: $theme)
                 GeometryReader { geo in
                     let scale = min(geo.size.width / exportSize.width, geo.size.height / exportSize.height)
-                    SeasonRecapCard(stats: stats, size: exportSize)
+                    SeasonRecapCard(stats: stats, size: exportSize, theme: theme)
                         .frame(width: exportSize.width, height: exportSize.height)
                         .scaleEffect(scale)
                         .frame(width: exportSize.width * scale, height: exportSize.height * scale)
@@ -132,7 +135,7 @@ struct SeasonRecapShareSheet: View {
 
     @MainActor
     private func makeShareable() -> ShareableImage? {
-        let renderer = ImageRenderer(content: SeasonRecapCard(stats: stats, size: exportSize))
+        let renderer = ImageRenderer(content: SeasonRecapCard(stats: stats, size: exportSize, theme: theme))
         renderer.scale = 1
         guard let image = renderer.uiImage else { return nil }
         return ShareableImage(image: image, filename: "dink-diary-season")

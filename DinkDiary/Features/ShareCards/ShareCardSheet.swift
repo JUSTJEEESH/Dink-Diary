@@ -34,16 +34,18 @@ struct ShareCardSheet: View {
     }
 
     @State private var frame: Frame = .story
+    @State private var theme: ShareTheme = .midnight
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: DD.Spacing.gutter) {
+            VStack(spacing: DD.Spacing.cardGap) {
                 framePicker
+                SharePickerBar(theme: $theme)
 
                 GeometryReader { geo in
                     let target = frame.exportSize
                     let scale = min(geo.size.width / target.width, geo.size.height / target.height)
-                    ShareCardView(session: session, size: target)
+                    ShareCardView(session: session, size: target, theme: theme)
                         .frame(width: target.width, height: target.height)
                         .scaleEffect(scale)
                         .frame(width: target.width * scale, height: target.height * scale)
@@ -104,7 +106,7 @@ struct ShareCardSheet: View {
 
     @MainActor
     private func makeShareable() -> ShareableImage? {
-        let renderer = ImageRenderer(content: ShareCardView(session: session, size: frame.exportSize))
+        let renderer = ImageRenderer(content: ShareCardView(session: session, size: frame.exportSize, theme: theme))
         renderer.scale = 1
         guard let image = renderer.uiImage else { return nil }
         return ShareableImage(image: image, filename: "dink-diary-recap")

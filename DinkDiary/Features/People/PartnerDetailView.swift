@@ -6,6 +6,7 @@ import SwiftUI
 struct PartnerDetailView: View {
     let player: Player
     let allGames: [Game]
+    @State private var showingShare = false
 
     private var together: (wins: Int, losses: Int) {
         StatsEngine.record(withPartner: player, in: allGames)
@@ -52,6 +53,19 @@ struct PartnerDetailView: View {
         .background(DD.Colors.surface)
         .navigationTitle(player.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingShare = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundStyle(DD.Colors.accentWin)
+                }
+            }
+        }
+        .sheet(isPresented: $showingShare) {
+            HeadToHeadShareSheet(player: player, allGames: allGames)
+        }
     }
 
     private var header: some View {

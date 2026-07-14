@@ -3,12 +3,18 @@ import SwiftUI
 /// The full timeline of your moments, most recent first.
 struct MilestonesView: View {
     let milestones: [Milestone]
+    @State private var sharing: Milestone?
 
     var body: some View {
         ScrollView {
             VStack(spacing: DD.Spacing.rowGap) {
                 ForEach(milestones) { milestone in
-                    MilestoneRow(milestone: milestone)
+                    Button {
+                        sharing = milestone
+                    } label: {
+                        MilestoneRow(milestone: milestone, showsShareHint: true)
+                    }
+                    .buttonStyle(DDCardButtonStyle())
                 }
             }
             .padding(.horizontal, DD.Spacing.gutter)
@@ -18,11 +24,15 @@ struct MilestonesView: View {
         .background(DD.Colors.surface)
         .navigationTitle("Moments")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $sharing) { milestone in
+            MilestoneShareSheet(milestone: milestone)
+        }
     }
 }
 
 struct MilestoneRow: View {
     let milestone: Milestone
+    var showsShareHint = false
 
     private var tint: Color {
         switch milestone.kind {
@@ -51,9 +61,15 @@ struct MilestoneRow: View {
                     .foregroundStyle(DD.Colors.textSecondary)
             }
             Spacer(minLength: DD.Spacing.rowGap)
-            Text(milestone.achievedAt.formatted(.dateTime.month(.abbreviated).day()))
-                .font(DD.Fonts.caption)
-                .foregroundStyle(DD.Colors.textSecondary)
+            if showsShareHint {
+                Image(systemName: "square.and.arrow.up")
+                    .font(Font.system(size: 15, weight: .semibold))
+                    .foregroundStyle(DD.Colors.accentWin)
+            } else {
+                Text(milestone.achievedAt.formatted(.dateTime.month(.abbreviated).day()))
+                    .font(DD.Fonts.caption)
+                    .foregroundStyle(DD.Colors.textSecondary)
+            }
         }
         .padding(DD.Spacing.cardPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
