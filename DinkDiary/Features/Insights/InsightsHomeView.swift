@@ -9,6 +9,7 @@ struct InsightsHomeView: View {
     @State private var showingPaywall = false
     @State private var showingRecap = false
     @State private var celebrating: Milestone?
+    @State private var sharing: Milestone?
 
     private var milestones: [Milestone] {
         MilestoneEngine.achieved(games: allGames, sessions: allSessions)
@@ -51,6 +52,14 @@ struct InsightsHomeView: View {
             }
             .navigationTitle("Insights")
             .toolbarBackground(DD.Colors.surface, for: .navigationBar)
+            #if DEBUG
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Moment") { celebrating = milestones.first }
+                        .foregroundStyle(DD.Colors.textSecondary)
+                }
+            }
+            #endif
             .navigationDestination(for: String.self) { route in
                 if route == "moments" {
                     MilestonesView(milestones: milestones)
@@ -66,6 +75,9 @@ struct InsightsHomeView: View {
             .sheet(item: $celebrating) { milestone in
                 MilestoneCelebrationView(milestone: milestone)
                     .presentationDetents([.medium])
+            }
+            .sheet(item: $sharing) { milestone in
+                MilestoneShareSheet(milestone: milestone)
             }
             .onAppear {
                 celebrating = MilestoneSeenStore.newlyAchieved(from: milestones).first
@@ -119,7 +131,12 @@ struct InsightsHomeView: View {
         InsightCard(title: "Moments") {
             VStack(spacing: DD.Spacing.rowGap) {
                 ForEach(milestones.prefix(3)) { milestone in
-                    MilestoneRow(milestone: milestone)
+                    Button {
+                        sharing = milestone
+                    } label: {
+                        MilestoneRow(milestone: milestone, showsShareHint: true)
+                    }
+                    .buttonStyle(DDCardButtonStyle())
                 }
                 if milestones.count > 3 {
                     NavigationLink(value: "moments") {
