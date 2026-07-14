@@ -55,6 +55,7 @@ final class PhoneConnectivityManager: NSObject, WCSessionDelegate {
             case SyncType.sessionEnd:
                 if let payload = try? JSONDecoder().decode(SessionEndPayload.self, from: data) {
                     SessionIngestor.ingest(end: payload, into: context)
+                    await HealthEnricher.enrichPending(container: container)
                 }
             default:
                 break

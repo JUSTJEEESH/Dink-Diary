@@ -134,6 +134,9 @@ struct SessionsHomeView: View {
         let session = Session()
         context.insert(session)
         activeSession = session
+        let sessionID = session.remoteID
+        let container = context.container
+        Task { await SessionContextCapturer.capture(sessionID: sessionID, container: container) }
     }
 
     #if DEBUG

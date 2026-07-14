@@ -24,7 +24,13 @@ struct TrophyRecapCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DD.Spacing.cardGap) {
-            Text(headerText).ddCaption()
+            HStack(alignment: .top) {
+                Text(headerText).ddCaption()
+                Spacer(minLength: DD.Spacing.rowGap)
+                if let symbol = session.weatherSymbolName, let tempC = session.weatherTemperatureC {
+                    WeatherChip(symbolName: symbol, temperatureC: tempC)
+                }
+            }
 
             KitchenLineMotif(lineHeight: 1, tickHeight: 7)
 

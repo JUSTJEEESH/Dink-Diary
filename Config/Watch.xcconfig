@@ -8,8 +8,9 @@ SUPPORTED_PLATFORMS = watchos watchsimulator
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
 SKIP_INSTALL = YES
 
-// No entitlements yet; HealthKit is added back at M3 (see iOS.xcconfig note).
-// CODE_SIGN_ENTITLEMENTS = Config/DinkDiaryWatch.entitlements
+// HealthKit is used for the workout that wraps each session; automatic signing
+// registers it.
+CODE_SIGN_ENTITLEMENTS = Config/DinkDiaryWatch.entitlements
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 

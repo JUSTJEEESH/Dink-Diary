@@ -23,6 +23,7 @@ struct WatchRootView: View {
         .onAppear {
             WatchConnectivityManager.shared.store = store
             WatchConnectivityManager.shared.activate()
+            Task { await WorkoutManager.shared.requestAuthorization() }
             // Recover an interrupted session straight to the between-games hub.
             if store.hasUnfinishedSession { phase = .logged }
         }
@@ -65,14 +66,22 @@ struct WatchRootView: View {
                 gameCount: store.gameCount,
                 durationText: durationText
             ) {
-                if let sessionID = store.sessionID {
-                    WatchConnectivityManager.shared.sendSessionEnd(
-                        sessionID: sessionID, endedAt: .now, workoutUUID: nil
-                    )
-                }
-                store.endSession()
-                phase = .idle
+                endSession()
             }
+        }
+    }
+
+    private func endSession() {
+        let sessionID = store.sessionID
+        phase = .idle
+        Task {
+            let workoutUUID = await WorkoutManager.shared.end()
+            if let sessionID {
+                WatchConnectivityManager.shared.sendSessionEnd(
+                    sessionID: sessionID, endedAt: .now, workoutUUID: workoutUUID
+                )
+            }
+            store.endSession()
         }
     }
 
@@ -91,6 +100,7 @@ struct WatchRootView: View {
     private func startNewGame() {
         if !store.isActive {
             store.startSession()
+            WorkoutManager.shared.start()
             if let sessionID = store.sessionID, let startedAt = store.startedAt {
                 WatchConnectivityManager.shared.sendSessionStart(sessionID: sessionID, startedAt: startedAt)
             }

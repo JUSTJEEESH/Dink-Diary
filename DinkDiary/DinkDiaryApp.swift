@@ -7,6 +7,7 @@ struct DinkDiaryApp: App {
 
     init() {
         PhoneConnectivityManager.shared.start(container: container)
+        Task { await HealthEnricher.requestAuthorization() }
     }
 
     var body: some Scene {
@@ -18,10 +19,13 @@ struct DinkDiaryApp: App {
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
             // Keep the watch's partner grid current with people added on the phone.
-            if phase == .active {
-                PhoneConnectivityManager.shared.sendCurrentRoster()
-            }
+            PhoneConnectivityManager.shared.sendCurrentRoster()
+            // Ask for location once so court/weather capture can work.
+            LocationManager.shared.requestAuthorization()
+            // Fill in health stats for any watch session whose workout has now synced.
+            Task { await HealthEnricher.enrichPending(container: container) }
         }
     }
 }

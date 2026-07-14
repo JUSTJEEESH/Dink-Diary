@@ -82,10 +82,15 @@ final class PremiumStore {
             }
         }
         isPremium = active
+        // Cached so DataStore can decide CloudKit sync at the next launch.
+        UserDefaults.standard.set(active, forKey: DataStore.premiumCacheKey)
     }
 
     #if DEBUG
     /// Preview the gated states without going through the purchase flow.
-    func debugSetPremium(_ value: Bool) { isPremium = value }
+    func debugSetPremium(_ value: Bool) {
+        isPremium = value
+        UserDefaults.standard.set(value, forKey: DataStore.premiumCacheKey)
+    }
     #endif
 }
