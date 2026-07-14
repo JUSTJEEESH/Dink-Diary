@@ -17,13 +17,15 @@ enum Quips {
     }
 
     /// A stable integer seed from a string (a remoteID, a name). Simple FNV-1a,
-    /// so it does not depend on Swift's per-launch String hashing.
+    /// computed in fixed-width UInt32 so it is identical on 64-bit (iPhone) and
+    /// 32-bit-Int (arm64_32, Apple Watch) and does not depend on Swift's
+    /// per-launch String hashing.
     static func seed(_ string: String) -> Int {
-        var hash = 0x811c_9dc5
+        var hash: UInt32 = 0x811c_9dc5
         for byte in string.utf8 {
-            hash = (hash ^ Int(byte)) &* 0x0100_0193
+            hash = (hash ^ UInt32(byte)) &* 0x0100_0193
         }
-        return hash & 0x7fff_ffff
+        return Int(hash & 0x7fff_ffff)
     }
 
     // MARK: Empty timeline
