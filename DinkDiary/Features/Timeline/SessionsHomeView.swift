@@ -6,6 +6,7 @@ import SwiftData
 struct SessionsHomeView: View {
     @Environment(\.modelContext) private var context
     @Environment(PremiumStore.self) private var premium
+    @Environment(SettingsStore.self) private var settings
     @Query(sort: \Session.startedAt, order: .reverse) private var sessions: [Session]
     @State private var activeSession: Session?
     @State private var showingPaywall = false
@@ -15,17 +16,13 @@ struct SessionsHomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DD.Spacing.cardGap) {
-                    if streak >= 2 {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                StreakBadge(count: streak)
-                                Spacer()
-                            }
-                            Text(Quips.streak(count: streak))
-                                .font(DD.Fonts.footnote)
-                                .foregroundStyle(DD.Colors.textSecondary)
-                        }
-                    }
+                    SeasonHeroView(
+                        stats: seasonStats,
+                        currentStreak: streak,
+                        firstName: settings.firstName,
+                        daySeed: daySeed,
+                        hour: Calendar.current.component(.hour, from: .now)
+                    )
 
                     PillButton(title: "Start a session") { startSession() }
 
@@ -150,12 +147,25 @@ struct SessionsHomeView: View {
             .max { $0.startedAt < $1.startedAt }
     }
 
+    private var allGames: [Game] {
+        sessions.flatMap { $0.games ?? [] }
+    }
+
     private var allGamesNewestFirst: [Game] {
-        sessions.flatMap { $0.games ?? [] }.sorted { $0.playedAt > $1.playedAt }
+        allGames.sorted { $0.playedAt > $1.playedAt }
     }
 
     private var streak: Int {
         StatsEngine.currentWinStreak(in: allGamesNewestFirst)
+    }
+
+    private var seasonStats: SeasonStats {
+        SeasonRecapEngine.currentStats(games: allGames, sessions: sessions, now: .now)
+    }
+
+    /// Stable per-day seed, shared by the hero's identity line and the empty copy.
+    private var daySeed: Int {
+        Calendar.current.ordinality(of: .day, in: .era, for: .now) ?? 0
     }
 
     private func startSession() {
@@ -183,8 +193,7 @@ struct SessionsHomeView: View {
     #endif
 
     private var emptyState: some View {
-        let day = Calendar.current.ordinality(of: .day, in: .era, for: .now) ?? 0
-        let copy = Quips.emptyTimeline(daySeed: day)
+        let copy = Quips.emptyTimeline(daySeed: daySeed)
         return VStack(spacing: DD.Spacing.cardGap) {
             KitchenLineMotif(dimmed: true)
                 .frame(width: 120)

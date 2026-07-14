@@ -15,9 +15,25 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        @Bindable var settings = settings
+        return NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: DD.Spacing.gutter) {
+                    VStack(alignment: .leading, spacing: DD.Spacing.cardGap) {
+                        Text("Your name").ddCaption()
+                        TextField("First name", text: $settings.playerName)
+                            .textContentType(.givenName)
+                            .autocorrectionDisabled()
+                            .font(DD.Fonts.headline)
+                            .foregroundStyle(DD.Colors.textPrimary)
+                            .padding(.horizontal, DD.Spacing.cardPadding)
+                            .padding(.vertical, 12)
+                            .background(DD.Colors.surfaceElevated, in: Capsule())
+                        Text("Just to warm up your home screen. It stays on your device.")
+                            .font(DD.Fonts.footnote)
+                            .foregroundStyle(DD.Colors.textSecondary)
+                    }
+
                     VStack(alignment: .leading, spacing: DD.Spacing.cardGap) {
                         Text("Scoring").ddCaption()
                         segmented(

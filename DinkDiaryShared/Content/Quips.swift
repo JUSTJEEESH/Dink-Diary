@@ -45,6 +45,19 @@ enum Quips {
         return choice
     }
 
+    // MARK: Greeting
+
+    /// A warm, time-aware greeting for the home hero. No name here; the view
+    /// appends it when there is one.
+    static func greeting(hour: Int) -> String {
+        switch hour {
+        case 5..<12: return "Good morning"
+        case 12..<17: return "Good afternoon"
+        case 17..<22: return "Good evening"
+        default: return "Still up"
+        }
+    }
+
     // MARK: Streaks
 
     /// Scales with how hot you are. Seeded by count so it is stable per streak.
