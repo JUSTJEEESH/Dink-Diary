@@ -8,7 +8,7 @@ import Foundation
 struct ScoreEngine: Codable, Equatable {
     private(set) var state: ScoreState
     private var history: [ScoreState] = []
-    private let maxHistory = 256
+    private static let maxHistory = 256
 
     init(mode: ScoringType,
          servingTeam: Team = .us,
@@ -101,8 +101,8 @@ struct ScoreEngine: Codable, Equatable {
 
     private mutating func pushHistory() {
         history.append(state)
-        if history.count > maxHistory {
-            history.removeFirst(history.count - maxHistory)
+        if history.count > Self.maxHistory {
+            history.removeFirst(history.count - Self.maxHistory)
         }
     }
 }
