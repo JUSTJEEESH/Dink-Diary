@@ -26,6 +26,8 @@ struct WatchGame: Identifiable, Codable {
     var myScore: Int
     var theirScore: Int
     var mode: ScoringType
+    var targetPoints: Int = 11
+    var winBy: Int = 2
     var partnerID: UUID?
     var partnerName: String?
     var playedAt = Date()

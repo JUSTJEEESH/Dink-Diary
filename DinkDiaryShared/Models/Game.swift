@@ -11,6 +11,10 @@ final class Game {
     var myScore: Int = 0
     var theirScore: Int = 0
     var scoringTypeRaw: String = ScoringType.sideOut.rawValue
+    // The format this game was played under, remembered per game (additive with
+    // defaults, so existing stores migrate automatically).
+    var targetPoints: Int = 11
+    var winBy: Int = 2
 
     var session: Session? = nil
     var myPartner: Player? = nil          // nil = singles or partner not recorded
@@ -18,7 +22,7 @@ final class Game {
 
     init(myScore: Int = 0,
          theirScore: Int = 0,
-         scoringType: ScoringType = .sideOut,
+         format: GameFormat = .standard,
          orderIndex: Int = 0,
          playedAt: Date = .now) {
         self.remoteID = UUID()
@@ -26,12 +30,18 @@ final class Game {
         self.orderIndex = orderIndex
         self.myScore = myScore
         self.theirScore = theirScore
-        self.scoringTypeRaw = scoringType.rawValue
+        self.scoringTypeRaw = format.scoringType.rawValue
+        self.targetPoints = format.targetPoints
+        self.winBy = format.winBy
     }
 
     var didWin: Bool { myScore > theirScore }
 
     var scoringType: ScoringType {
         ScoringType(rawValue: scoringTypeRaw) ?? .sideOut
+    }
+
+    var format: GameFormat {
+        GameFormat(scoringType: scoringType, targetPoints: targetPoints, winBy: winBy)
     }
 }

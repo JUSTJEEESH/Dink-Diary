@@ -30,6 +30,8 @@ enum SessionIngestor {
         game.myScore = payload.myScore
         game.theirScore = payload.theirScore
         game.scoringTypeRaw = payload.scoringType
+        game.targetPoints = payload.targetPoints
+        game.winBy = payload.winBy
         game.session = session
         if let partnerID = payload.partnerID {
             game.myPartner = fetchOrCreatePlayer(id: partnerID, name: payload.partnerName ?? "", in: context)

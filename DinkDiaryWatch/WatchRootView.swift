@@ -8,6 +8,7 @@ struct WatchRootView: View {
     @State private var phase: Phase = .idle
     @State private var engine = ScoreEngine(mode: .sideOut)
     @State private var mode: ScoringType = .sideOut
+    @State private var target: Int = 11
     @State private var lastGame: WatchGame?
 
     enum Phase {
@@ -31,7 +32,7 @@ struct WatchRootView: View {
     private var content: some View {
         switch phase {
         case .idle:
-            StartView(mode: $mode) { startNewGame() }
+            StartView(mode: $mode, target: $target) { startNewGame() }
 
         case .scoring:
             ScoringFaceView(engine: $engine) { phase = .confirm }
@@ -94,7 +95,7 @@ struct WatchRootView: View {
                 WatchConnectivityManager.shared.sendSessionStart(sessionID: sessionID, startedAt: startedAt)
             }
         }
-        engine = ScoreEngine(mode: mode)
+        engine = ScoreEngine(mode: mode, targetPoints: target, winBy: 2)
         phase = .scoring
     }
 
@@ -103,6 +104,8 @@ struct WatchRootView: View {
             myScore: engine.usScore,
             theirScore: engine.themScore,
             mode: mode,
+            targetPoints: target,
+            winBy: 2,
             partnerID: partner?.id,
             partnerName: partner?.name
         )
@@ -119,6 +122,8 @@ struct WatchRootView: View {
                     myScore: game.myScore,
                     theirScore: game.theirScore,
                     scoringType: game.mode.rawValue,
+                    targetPoints: game.targetPoints,
+                    winBy: game.winBy,
                     partnerID: game.partnerID,
                     partnerName: game.partnerName
                 )

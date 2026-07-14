@@ -9,6 +9,7 @@ struct SessionsHomeView: View {
     @Query(sort: \Session.startedAt, order: .reverse) private var sessions: [Session]
     @State private var activeSession: Session?
     @State private var showingPaywall = false
+    @State private var showingSettings = false
 
     var body: some View {
         NavigationStack {
@@ -43,8 +44,23 @@ struct SessionsHomeView: View {
             }
             .background(DD.Colors.surface)
             .navigationTitle("Your season")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .foregroundStyle(DD.Colors.textSecondary)
+                    }
+                }
+            }
             .sheet(isPresented: $showingPaywall) {
                 PaywallView()
+                    .environment(premium)
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
+                    .environment(SettingsStore.shared)
             }
             #if DEBUG
             .toolbar {

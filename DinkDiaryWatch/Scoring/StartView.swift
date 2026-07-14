@@ -3,6 +3,7 @@ import SwiftUI
 /// Idle screen: pick the scoring mode and start the first game.
 struct StartView: View {
     @Binding var mode: ScoringType
+    @Binding var target: Int
     var onStart: () -> Void
 
     var body: some View {
@@ -12,7 +13,13 @@ struct StartView: View {
                     .font(DD.Fonts.headline)
                     .foregroundStyle(DD.Colors.textPrimary)
 
-                modeToggle
+                toggle(options: ScoringType.allCases.map { ($0.label, AnyHashable($0)) },
+                       isSelected: { ($0 as? ScoringType) == mode },
+                       select: { if let t = $0 as? ScoringType { mode = t } })
+
+                toggle(options: GameFormat.targetOptions.map { ("\($0)", AnyHashable($0)) },
+                       isSelected: { ($0 as? Int) == target },
+                       select: { if let t = $0 as? Int { target = t } })
 
                 Button(action: onStart) {
                     Text("Start game")
@@ -28,21 +35,22 @@ struct StartView: View {
         .background(DD.Colors.watchCanvas)
     }
 
-    private var modeToggle: some View {
+    private func toggle(
+        options: [(String, AnyHashable)],
+        isSelected: @escaping (AnyHashable) -> Bool,
+        select: @escaping (AnyHashable) -> Void
+    ) -> some View {
         HStack(spacing: 0) {
-            ForEach(ScoringType.allCases) { type in
+            ForEach(options, id: \.1) { title, value in
                 Button {
-                    mode = type
+                    select(value)
                 } label: {
-                    Text(type.label)
+                    Text(title)
                         .font(DD.Fonts.caption)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
-                        .foregroundStyle(mode == type ? DD.Colors.surface : DD.Colors.textSecondary)
-                        .background(
-                            mode == type ? DD.Colors.accentWin : Color.clear,
-                            in: Capsule()
-                        )
+                        .foregroundStyle(isSelected(value) ? DD.Colors.surface : DD.Colors.textSecondary)
+                        .background(isSelected(value) ? DD.Colors.accentWin : Color.clear, in: Capsule())
                 }
                 .buttonStyle(.plain)
             }

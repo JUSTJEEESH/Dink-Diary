@@ -47,6 +47,7 @@ struct QuickEntrySessionView: View {
             }
             .sheet(isPresented: $showingGameForm) {
                 GameEntryForm(session: session)
+                    .environment(SettingsStore.shared)
             }
             .onAppear { courtName = session.court?.name ?? "" }
         }

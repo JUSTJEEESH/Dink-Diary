@@ -26,6 +26,8 @@ struct GamePayload: Codable {
     var myScore: Int
     var theirScore: Int
     var scoringType: String
+    var targetPoints: Int
+    var winBy: Int
     var partnerID: UUID?
     var partnerName: String?
 }

@@ -57,7 +57,7 @@ enum SampleData {
             let game = Game(
                 myScore: mine,
                 theirScore: theirs,
-                scoringType: .sideOut,
+                format: .standard,
                 orderIndex: index,
                 playedAt: start.addingTimeInterval(TimeInterval(index * 600))
             )

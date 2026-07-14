@@ -38,7 +38,12 @@ struct GameRowView: View {
                 }
             }
             Spacer(minLength: DD.Spacing.rowGap)
-            WinLossPill(didWin: game.didWin, score: "\(game.myScore)-\(game.theirScore)")
+            VStack(alignment: .trailing, spacing: 4) {
+                WinLossPill(didWin: game.didWin, score: "\(game.myScore)-\(game.theirScore)")
+                Text(game.format.label)
+                    .font(DD.Fonts.caption)
+                    .foregroundStyle(DD.Colors.textSecondary)
+            }
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 16)

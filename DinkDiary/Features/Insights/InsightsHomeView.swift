@@ -38,6 +38,7 @@ struct InsightsHomeView: View {
             .toolbarBackground(DD.Colors.surface, for: .navigationBar)
             .sheet(isPresented: $showingPaywall) {
                 PaywallView()
+                    .environment(premium)
             }
         }
     }

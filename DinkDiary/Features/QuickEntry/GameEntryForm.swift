@@ -1,23 +1,35 @@
 import SwiftUI
 import SwiftData
 
-/// Add one game: scores, mode, partner, opponents. Shows a live W/L pill so the
-/// result reads back before saving.
+/// Add one game. The format (scoring type + target) defaults to your setting and
+/// can be changed here; Save is only allowed when the score is a finished
+/// pickleball game (reached the target, won by the margin), with a gentle nudge
+/// when it isn't. This is the same rule the watch scores by.
 struct GameEntryForm: View {
     let session: Session
     @Environment(\.modelContext) private var context
+    @Environment(SettingsStore.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
     @State private var myScore = 11
     @State private var theirScore = 9
-    @State private var mode: ScoringType = .sideOut
+    @State private var scoringType: ScoringType = .sideOut
+    @State private var targetPoints = 11
     @State private var partner: Player?
     @State private var opponents: [Player] = []
     @State private var activePicker: PickerKind?
+    @State private var didLoadDefaults = false
 
     private enum PickerKind: Int, Identifiable {
         case partner, opponents
         var id: Int { rawValue }
+    }
+
+    private var format: GameFormat {
+        GameFormat(scoringType: scoringType, targetPoints: targetPoints, winBy: settings.winBy)
+    }
+    private var isValid: Bool {
+        format.isComplete(myScore: myScore, theirScore: theirScore)
     }
 
     var body: some View {
@@ -29,26 +41,27 @@ struct GameEntryForm: View {
                         ScoreStepper(label: "Them", value: $theirScore)
                     }
 
-                    modePicker
-
-                    selectorRow(
-                        label: "Partner",
-                        value: partner?.name ?? "Add",
-                        action: { activePicker = .partner }
+                    segmented(
+                        options: ScoringType.allCases.map { ($0.label, AnyHashable($0)) },
+                        isSelected: { ($0 as? ScoringType) == scoringType },
+                        select: { if let t = $0 as? ScoringType { scoringType = t } }
                     )
+                    segmented(
+                        options: GameFormat.targetOptions.map { ("To \($0)", AnyHashable($0)) },
+                        isSelected: { ($0 as? Int) == targetPoints },
+                        select: { if let t = $0 as? Int { targetPoints = t } }
+                    )
+
+                    selectorRow(label: "Partner", value: partner?.name ?? "Add") { activePicker = .partner }
                     selectorRow(
                         label: "Opponents",
-                        value: opponents.isEmpty ? "Add" : opponents.map(\.name).joined(separator: ", "),
-                        action: { activePicker = .opponents }
-                    )
+                        value: opponents.isEmpty ? "Add" : opponents.map(\.name).joined(separator: ", ")
+                    ) { activePicker = .opponents }
 
-                    HStack {
-                        Spacer()
-                        WinLossPill(didWin: myScore > theirScore, score: "\(myScore)-\(theirScore)")
-                        Spacer()
-                    }
+                    resultPreview
 
                     PillButton(title: "Save game") { save() }
+                        .disabled(!isValid)
                 }
                 .padding(DD.Spacing.gutter)
             }
@@ -64,41 +77,51 @@ struct GameEntryForm: View {
             .sheet(item: $activePicker) { kind in
                 switch kind {
                 case .partner:
-                    PlayerPickerSheet(
-                        title: "Your partner",
-                        initiallySelected: partner.map { [$0] } ?? []
-                    ) { result in
+                    PlayerPickerSheet(title: "Your partner", initiallySelected: partner.map { [$0] } ?? []) { result in
                         partner = result.first
                     }
                 case .opponents:
-                    PlayerPickerSheet(
-                        title: "Opponents",
-                        allowsMultiple: true,
-                        maxSelection: 2,
-                        initiallySelected: opponents
-                    ) { result in
+                    PlayerPickerSheet(title: "Opponents", allowsMultiple: true, maxSelection: 2, initiallySelected: opponents) { result in
                         opponents = result
                     }
                 }
             }
+            .onAppear {
+                guard !didLoadDefaults else { return }
+                didLoadDefaults = true
+                scoringType = settings.scoringType
+                targetPoints = settings.targetPoints
+            }
         }
     }
 
-    private var modePicker: some View {
+    private var resultPreview: some View {
+        VStack(spacing: DD.Spacing.rowGap) {
+            WinLossPill(didWin: myScore > theirScore, score: "\(myScore)-\(theirScore)")
+                .opacity(isValid ? 1 : 0.4)
+            Text(format.incompleteReason(myScore: myScore, theirScore: theirScore) ?? format.label)
+                .font(DD.Fonts.footnote)
+                .foregroundStyle(isValid ? DD.Colors.textSecondary : DD.Colors.accentLoss)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func segmented(
+        options: [(String, AnyHashable)],
+        isSelected: @escaping (AnyHashable) -> Bool,
+        select: @escaping (AnyHashable) -> Void
+    ) -> some View {
         HStack(spacing: 0) {
-            ForEach(ScoringType.allCases) { type in
+            ForEach(options, id: \.1) { title, value in
                 Button {
-                    mode = type
+                    select(value)
                 } label: {
-                    Text(type.label)
+                    Text(title)
                         .font(DD.Fonts.headline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
-                        .foregroundStyle(mode == type ? DD.Colors.surface : DD.Colors.textSecondary)
-                        .background(
-                            mode == type ? DD.Colors.accentWin : Color.clear,
-                            in: Capsule()
-                        )
+                        .foregroundStyle(isSelected(value) ? DD.Colors.surface : DD.Colors.textSecondary)
+                        .background(isSelected(value) ? DD.Colors.accentWin : Color.clear, in: Capsule())
                 }
                 .buttonStyle(.plain)
             }
@@ -123,19 +146,17 @@ struct GameEntryForm: View {
                     .foregroundStyle(DD.Colors.textSecondary)
             }
             .padding(DD.Spacing.cardPadding)
-            .background(
-                DD.Colors.surfaceElevated,
-                in: .rect(cornerRadius: DD.Radius.gameRow, style: .continuous)
-            )
+            .background(DD.Colors.surfaceElevated, in: .rect(cornerRadius: DD.Radius.gameRow, style: .continuous))
         }
         .buttonStyle(.plain)
     }
 
     private func save() {
+        guard isValid else { return }
         let game = Game(
             myScore: myScore,
             theirScore: theirScore,
-            scoringType: mode,
+            format: format,
             orderIndex: (session.games ?? []).count
         )
         game.session = session
