@@ -5,6 +5,7 @@ import SwiftData
 struct InsightsHomeView: View {
     @Environment(PremiumStore.self) private var premium
     @Query private var allGames: [Game]
+    @State private var showingPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -35,6 +36,9 @@ struct InsightsHomeView: View {
             }
             .navigationTitle("Insights")
             .toolbarBackground(DD.Colors.surface, for: .navigationBar)
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
+            }
         }
     }
 
@@ -103,7 +107,7 @@ struct InsightsHomeView: View {
             .opacity(0.55)
             .allowsHitTesting(false)
 
-            LockedInsightsOverlay { premium.unlockForNow() }
+            LockedInsightsOverlay { showingPaywall = true }
         }
     }
 

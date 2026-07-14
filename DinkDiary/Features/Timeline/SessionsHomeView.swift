@@ -5,8 +5,10 @@ import SwiftData
 /// scrolling feed of session cards. Empty state per components.md.
 struct SessionsHomeView: View {
     @Environment(\.modelContext) private var context
+    @Environment(PremiumStore.self) private var premium
     @Query(sort: \Session.startedAt, order: .reverse) private var sessions: [Session]
     @State private var activeSession: Session?
+    @State private var showingPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -24,11 +26,14 @@ struct SessionsHomeView: View {
                     if displayedSessions.isEmpty {
                         emptyState.padding(.top, 40)
                     } else {
-                        ForEach(displayedSessions) { session in
+                        ForEach(visibleSessions) { session in
                             NavigationLink(value: session) {
                                 SessionCardView(session: session)
                             }
                             .buttonStyle(DDCardButtonStyle())
+                        }
+                        if lockedSessionCount > 0 {
+                            historyLockCard
                         }
                     }
                 }
@@ -38,13 +43,16 @@ struct SessionsHomeView: View {
             }
             .background(DD.Colors.surface)
             .navigationTitle("Your season")
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
+            }
             #if DEBUG
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Button("Seed sample season") { SampleData.seed(into: context) }
-                        Button(PremiumStore.shared.isPremium ? "Switch to free" : "Unlock premium") {
-                            PremiumStore.shared.isPremium.toggle()
+                        Button(premium.isPremium ? "Switch to free" : "Unlock premium") {
+                            premium.debugSetPremium(!premium.isPremium)
                         }
                         Button("Clear all", role: .destructive) { clearAll() }
                     } label: {
@@ -67,6 +75,35 @@ struct SessionsHomeView: View {
     /// game was logged); a normally ended empty session is already discarded.
     private var displayedSessions: [Session] {
         sessions.filter { !($0.games ?? []).isEmpty }
+    }
+
+    /// Free tier sees the most recent sessions only; premium sees them all.
+    private var visibleSessions: [Session] {
+        premium.isPremium ? displayedSessions : Array(displayedSessions.prefix(PremiumStore.freeSessionLimit))
+    }
+
+    private var lockedSessionCount: Int {
+        displayedSessions.count - visibleSessions.count
+    }
+
+    private var historyLockCard: some View {
+        Button {
+            showingPaywall = true
+        } label: {
+            VStack(spacing: DD.Spacing.rowGap) {
+                Text("\(lockedSessionCount) more \(lockedSessionCount == 1 ? "session" : "sessions") back there.")
+                    .font(DD.Fonts.headline)
+                    .foregroundStyle(DD.Colors.textPrimary)
+                    .multilineTextAlignment(.center)
+                Text("Unlock your full history")
+                    .font(DD.Fonts.footnote)
+                    .foregroundStyle(DD.Colors.accentWin)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(DD.Spacing.cardPadding)
+            .background(DD.Colors.surfaceElevated, in: .rect(cornerRadius: DD.Radius.sessionCard, style: .continuous))
+        }
+        .buttonStyle(DDCardButtonStyle())
     }
 
     private var allGamesNewestFirst: [Game] {
