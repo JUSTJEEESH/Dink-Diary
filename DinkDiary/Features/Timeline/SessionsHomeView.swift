@@ -16,9 +16,14 @@ struct SessionsHomeView: View {
             ScrollView {
                 VStack(spacing: DD.Spacing.cardGap) {
                     if streak >= 2 {
-                        HStack {
-                            StreakBadge(count: streak)
-                            Spacer()
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                StreakBadge(count: streak)
+                                Spacer()
+                            }
+                            Text(Quips.streak(count: streak))
+                                .font(DD.Fonts.footnote)
+                                .foregroundStyle(DD.Colors.textSecondary)
                         }
                     }
 
@@ -178,15 +183,18 @@ struct SessionsHomeView: View {
     #endif
 
     private var emptyState: some View {
-        VStack(spacing: DD.Spacing.cardGap) {
+        let day = Calendar.current.ordinality(of: .day, in: .era, for: .now) ?? 0
+        let copy = Quips.emptyTimeline(daySeed: day)
+        return VStack(spacing: DD.Spacing.cardGap) {
             KitchenLineMotif(dimmed: true)
                 .frame(width: 120)
-            Text("No games yet.")
+            Text(copy.title)
                 .font(DD.Fonts.title3)
                 .foregroundStyle(DD.Colors.textPrimary)
-            Text("Go find a fourth.")
+            Text(copy.line)
                 .font(DD.Fonts.body)
                 .foregroundStyle(DD.Colors.textSecondary)
+                .multilineTextAlignment(.center)
         }
     }
 }

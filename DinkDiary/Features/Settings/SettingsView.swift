@@ -4,6 +4,15 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(SettingsStore.self) private var settings
     @Environment(\.dismiss) private var dismiss
+    @State private var kitchenTaps = 0
+
+    /// How many taps into the hidden kitchen the reader has gone. The last line
+    /// stays put once revealed; earlier taps just do nothing visible.
+    private var kitchenSecret: String? {
+        let revealed = kitchenTaps - 6
+        guard revealed >= 1 else { return nil }
+        return Quips.kitchenSecret[min(revealed, Quips.kitchenSecret.count) - 1]
+    }
 
     var body: some View {
         NavigationStack {
@@ -30,7 +39,27 @@ struct SettingsView: View {
                     Text("Win by \(settings.winBy). New games use this format; you can change it per game as you log.")
                         .font(DD.Fonts.footnote)
                         .foregroundStyle(DD.Colors.textSecondary)
+
+                    Spacer(minLength: DD.Spacing.gutter)
+
+                    // The kitchen. Tap the line a few times to find it.
+                    Text("Dink Diary")
+                        .font(DD.Fonts.caption)
+                        .foregroundStyle(DD.Colors.textSecondary.opacity(0.5))
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if kitchenTaps < 6 + Quips.kitchenSecret.count { kitchenTaps += 1 }
+                        }
+                    if let secret = kitchenSecret {
+                        Text(secret)
+                            .font(DD.Fonts.footnote)
+                            .foregroundStyle(DD.Colors.kitchenGreen)
+                            .frame(maxWidth: .infinity)
+                            .transition(.opacity)
+                    }
                 }
+                .animation(.easeOut(duration: DD.Motion.navFade), value: kitchenTaps)
                 .padding(DD.Spacing.gutter)
             }
             .background(DD.Colors.surface)

@@ -156,7 +156,7 @@ struct InsightsHomeView: View {
                         Text(nemesis.player.name)
                             .font(DD.Fonts.headline)
                             .foregroundStyle(DD.Colors.textPrimary)
-                        Text("One day.")
+                        Text(Quips.rivalryLine(seed: Quips.seed(nemesis.player.remoteID.uuidString)))
                             .font(DD.Fonts.footnote)
                             .foregroundStyle(DD.Colors.textSecondary)
                     }

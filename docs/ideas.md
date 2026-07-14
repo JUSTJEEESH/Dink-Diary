@@ -165,6 +165,62 @@ $ = monetizable.
 - **Pull-to-refresh** with a bouncing optic ball.
 - **App-open streak** ("you've logged 12 weeks straight").
 
+## 14. Humor layer (the app should make you laugh)
+
+The voice is warm, dry, a little unhinged; never mean, never coaching. Losses
+are rivalries, never failures. All copy obeys the hard rules (no em dashes, no
+coaching language). Every line is chosen by a stable seed so it never reshuffles
+mid-scroll. Central home: `DinkDiaryShared/Content/Quips.swift`.
+
+- ★ **Empty states with a pulse** (done) — the "no games yet" nudge rotates
+  daily: "The kitchen is calling," "This is the part before the montage,"
+  "Somebody has to be the fourth. Might as well be you."
+- ★ **Streak taunts that escalate** (done) — 2: "A pattern forms." 5: "You are
+  officially a problem." 12+: "This is just bullying now."
+- ★ **Score tags on the game row** (done) — a shutout is a "Skunk," a deuce war
+  is a "Barn burner," a blowout is a "Statement made" (or, on the other side,
+  "We do not talk about it").
+- **Nemesis micro-copy** (done) — rotating rivalry lines: "The comeback is still
+  loading," "History is written by whoever plays next week."
+- **Recap captions with jokes** (done) — the Season Recap slides land punchlines:
+  "They should charge you rent," "post-game tacos, earned," "Flex responsibly."
+- **Milestone subtitles** (done, keep deepening) — "you were the problem," "your
+  pickleball world," dated to when it actually happened.
+- ◆ **Loading / processing lines** — brief, rotating: "Chalking the lines,"
+  "Arguing the score," "Finding the fourth."
+- **Notification copy with personality** — "Your paddle misses you," "The streak
+  is getting cold."
+- **Weather-aware quips** — a rainy session logged: "Played through it. Respect."
+- **Time-of-day greetings** — a 6am session: "The dawn patrol logs on."
+- **Milestone near-misses** — "99 games. One more and it's a party."
+
+## 15. Easter eggs (hidden things that make people smile)
+
+Discoverable, never required; each one is a small gift for the curious. Nothing
+gates real function behind them.
+
+- ★ **The kitchen** (done) — tap the "Dink Diary" wordmark at the bottom of
+  Settings seven times and a hidden line appears: "You found the kitchen." Keep
+  tapping: "No volleying in here." … "Okay you can stay. Nice dinks."
+- ★ **Score personalities** (done) — special finals quietly earn a word (skunk,
+  barn burner, statement). More to add: a "reverse skunk" comeback, a perfect
+  11-0-11-0-11-0 session badge.
+- **Konami-ish gesture** — a secret long-press on the app icon area or a
+  three-finger tap on the scoreboard triggers a one-time confetti optic-ball
+  shower.
+- **Anniversary surprise** — on the exact date of your first-ever logged game, a
+  quiet "one year ago today, it began" card.
+- **The 404 court** — an impossible stat (0 games, all-time) shows a tongue-in-
+  cheek "records are made to be started" instead of an error.
+- **Hidden partner titles** — play 100 games with one person and they earn a
+  secret honorific on their detail page ("Ride or Dink").
+- **Shake to settle a dispute** — shake the phone mid-session for a coin-flip
+  "who serves" optic-ball toss.
+- **Dev/owner wink** — a long-press on the version number reveals a warm one-line
+  thank-you from the makers.
+- **Seasonal skins** — a subtle optic-ball ornament on the app's birthday or on
+  major pickleball tournament days.
+
 ---
 
 ## Recommended sequence (my opinion)

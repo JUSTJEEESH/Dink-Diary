@@ -40,9 +40,15 @@ struct GameRowView: View {
             Spacer(minLength: DD.Spacing.rowGap)
             VStack(alignment: .trailing, spacing: 4) {
                 WinLossPill(didWin: game.didWin, score: "\(game.myScore)-\(game.theirScore)")
-                Text(game.format.label)
-                    .font(DD.Fonts.caption)
-                    .foregroundStyle(DD.Colors.textSecondary)
+                if let tag = Quips.scoreTag(myScore: game.myScore, theirScore: game.theirScore) {
+                    Text(tag)
+                        .font(DD.Fonts.caption)
+                        .foregroundStyle(game.didWin ? DD.Colors.kitchenGreen : DD.Colors.textSecondary)
+                } else {
+                    Text(game.format.label)
+                        .font(DD.Fonts.caption)
+                        .foregroundStyle(DD.Colors.textSecondary)
+                }
             }
         }
         .padding(.vertical, 12)
