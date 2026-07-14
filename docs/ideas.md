@@ -76,8 +76,9 @@ $ = monetizable.
 - ★ **DUPR display integration** — show your rating and its trend graph;
   display-only, never a competing rating. Absorbs DUPR's pull without becoming it.
 - **Partner photos from Contacts** — richer avatars, real faces.
-- **"Your courts" map** — a beautiful map of everywhere you've played (you already
-  store coordinates).
+- **"Your courts" map** (done) — a map of everywhere you've played, tinted pins by
+  record, tap through to a court; each court renameable with a photo that becomes
+  its card background, plus a mini-map on the court page.
 - **Deeper Apple Health** — pickleball-specific trends, "most active month,"
   rings tie-in, cardio recovery after sessions.
 - **Calendar** — sessions as calendar events; "you usually play Tuesdays."

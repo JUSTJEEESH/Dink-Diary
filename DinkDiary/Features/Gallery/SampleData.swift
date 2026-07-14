@@ -23,8 +23,11 @@ enum SampleData {
             .forEach { context.insert($0) }
 
         let sunset = Court(name: "Sunset Park")
+        sunset.latitude = 40.6782; sunset.longitude = -73.9442
         let riverside = Court(name: "Riverside Courts")
+        riverside.latitude = 40.8010; riverside.longitude = -73.9722
         let lakeside = Court(name: "Lakeside Rec")
+        lakeside.latitude = 40.7128; lakeside.longitude = -74.0060
         [sunset, riverside, lakeside].forEach { context.insert($0) }
 
         // An "on this day" memory from a year back.
