@@ -1,28 +1,21 @@
 import SwiftUI
 import UIKit
 
-/// A single celebrated moment, rendered for sharing. Big symbol, the milestone
-/// title, its warm subtitle, and the date it actually happened.
+/// A single celebrated moment, rendered for sharing. A big glyph on a tinted
+/// halo, the moment's headline, a warm/funny caption, an optional detail, and
+/// the date it happened. The tint color washes the whole card subtly so each
+/// kind of moment feels distinct.
 struct MilestoneCardView: View {
     let milestone: Milestone
     let size: CGSize
     var theme: ShareTheme = .midnight
 
     private var w: CGFloat { size.width }
-
-    private var tint: Color {
-        switch milestone.kind {
-        case .streak: return DD.Colors.streak
-        case .partner: return DD.Colors.accentWin
-        case .people: return DD.Colors.courtBlue
-        case .courts: return DD.Colors.kitchenGreen
-        default: return DD.Colors.textPrimary
-        }
-    }
+    private var tint: Color { milestone.tint.color }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: w * 0.03) {
-            Text("A moment \u{00B7} \(milestone.achievedAt.formatted(.dateTime.month(.abbreviated).day().year()))")
+        VStack(alignment: .leading, spacing: w * 0.035) {
+            Text("A moment \u{00B7} \(milestone.achievedAt.formatted(.dateTime.month(.wide).day().year()))")
                 .font(.system(size: w * 0.03, weight: .medium))
                 .textCase(.uppercase)
                 .tracking(w * 0.003)
@@ -31,34 +24,61 @@ struct MilestoneCardView: View {
             Spacer(minLength: 0)
 
             Image(systemName: milestone.symbol)
-                .font(.system(size: w * 0.16, weight: .semibold))
+                .font(.system(size: w * 0.17, weight: .bold))
                 .foregroundStyle(tint)
-                .frame(width: w * 0.28, height: w * 0.28)
-                .background(tint.opacity(0.16), in: Circle())
+                .frame(width: w * 0.32, height: w * 0.32)
+                .background(
+                    Circle()
+                        .fill(tint.opacity(0.18))
+                        .overlay(Circle().strokeBorder(tint.opacity(0.45), lineWidth: w * 0.006))
+                )
 
-            Text(milestone.title)
-                .font(.system(size: w * 0.11, weight: .heavy, design: .rounded))
-                .foregroundStyle(DD.Colors.textPrimary)
-                .lineLimit(2)
-                .minimumScaleFactor(0.5)
-            Text(milestone.subtitle)
-                .font(.system(size: w * 0.04, weight: .regular))
-                .foregroundStyle(DD.Colors.textSecondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: w * 0.015) {
+                Text(milestone.headline)
+                    .font(.system(size: w * 0.11, weight: .heavy, design: .rounded))
+                    .foregroundStyle(DD.Colors.textPrimary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.5)
+                Text(milestone.caption)
+                    .font(.system(size: w * 0.042, weight: .regular))
+                    .foregroundStyle(DD.Colors.textSecondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if let detail = milestone.detail {
+                Text(detail)
+                    .font(.system(size: w * 0.038, weight: .semibold, design: .rounded))
+                    .foregroundStyle(tint)
+                    .padding(.horizontal, w * 0.035)
+                    .padding(.vertical, w * 0.02)
+                    .background(tint.opacity(0.14), in: Capsule())
+            }
 
             Spacer(minLength: 0)
 
             HStack(spacing: w * 0.02) {
-                Circle().fill(DD.Colors.accentWin).frame(width: w * 0.02, height: w * 0.02)
+                Circle().fill(tint).frame(width: w * 0.022, height: w * 0.022)
                 Text("Dink Diary")
                     .font(.system(size: w * 0.03, weight: .semibold))
+                    .foregroundStyle(DD.Colors.textSecondary)
+                Spacer()
+                Text(milestone.achievedAt.formatted(.dateTime.year()))
+                    .font(.system(size: w * 0.03, weight: .medium))
                     .foregroundStyle(DD.Colors.textSecondary)
             }
         }
         .padding(w * 0.075)
         .frame(width: size.width, height: size.height, alignment: .topLeading)
-        .background(theme.gradient)
+        .background(
+            ZStack {
+                theme.gradient
+                RadialGradient(
+                    colors: [tint.opacity(0.22), Color.clear],
+                    center: .topLeading, startRadius: 0, endRadius: w * 0.9
+                )
+            }
+        )
     }
 }
 

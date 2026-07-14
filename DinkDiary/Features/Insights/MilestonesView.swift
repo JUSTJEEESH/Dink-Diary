@@ -34,31 +34,25 @@ struct MilestoneRow: View {
     let milestone: Milestone
     var showsShareHint = false
 
-    private var tint: Color {
-        switch milestone.kind {
-        case .streak: return DD.Colors.streak
-        case .partner: return DD.Colors.accentWin
-        case .people: return DD.Colors.courtBlue
-        case .courts: return DD.Colors.kitchenGreen
-        default: return DD.Colors.textPrimary
-        }
-    }
+    private var tint: Color { milestone.tint.color }
 
     var body: some View {
         HStack(spacing: DD.Spacing.cardGap) {
             Image(systemName: milestone.symbol)
-                .font(Font.system(size: 18, weight: .semibold))
+                .font(Font.system(size: 19, weight: .semibold))
                 .foregroundStyle(tint)
-                .frame(width: 44, height: 44)
+                .frame(width: 46, height: 46)
                 .background(tint.opacity(0.16), in: Circle())
+                .overlay(Circle().strokeBorder(tint.opacity(0.30), lineWidth: 1))
             VStack(alignment: .leading, spacing: 2) {
-                Text(milestone.title)
+                Text(milestone.headline)
                     .font(DD.Fonts.headline)
                     .foregroundStyle(DD.Colors.textPrimary)
                     .lineLimit(1)
-                Text(milestone.subtitle)
+                Text(milestone.detail ?? milestone.caption)
                     .font(DD.Fonts.footnote)
                     .foregroundStyle(DD.Colors.textSecondary)
+                    .lineLimit(1)
             }
             Spacer(minLength: DD.Spacing.rowGap)
             if showsShareHint {
