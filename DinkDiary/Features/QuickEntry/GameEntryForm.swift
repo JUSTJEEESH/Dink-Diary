@@ -5,8 +5,18 @@ import SwiftData
 /// can be changed here; Save is only allowed when the score is a finished
 /// pickleball game (reached the target, won by the margin), with a gentle nudge
 /// when it isn't. This is the same rule the watch scores by.
+/// Pre-filled players for a fast re-log (rematch or a doubles swap).
+struct GamePrefill {
+    var partner: Player?
+    var opponents: [Player] = []
+}
+
 struct GameEntryForm: View {
     let session: Session
+    /// People checked in tonight; the picker floats them to the top.
+    var roster: [Player] = []
+    /// Optional pre-filled teams for a one-tap re-log.
+    var prefill: GamePrefill? = nil
     @Environment(\.modelContext) private var context
     @Environment(SettingsStore.self) private var settings
     @Environment(\.dismiss) private var dismiss
@@ -77,11 +87,11 @@ struct GameEntryForm: View {
             .sheet(item: $activePicker) { kind in
                 switch kind {
                 case .partner:
-                    PlayerPickerSheet(title: "Your partner", initiallySelected: partner.map { [$0] } ?? []) { result in
+                    PlayerPickerSheet(title: "Your partner", prioritized: roster, initiallySelected: partner.map { [$0] } ?? []) { result in
                         partner = result.first
                     }
                 case .opponents:
-                    PlayerPickerSheet(title: "Opponents", allowsMultiple: true, maxSelection: 2, initiallySelected: opponents) { result in
+                    PlayerPickerSheet(title: "Opponents", allowsMultiple: true, maxSelection: 2, prioritized: roster, initiallySelected: opponents) { result in
                         opponents = result
                     }
                 }
@@ -91,6 +101,10 @@ struct GameEntryForm: View {
                 didLoadDefaults = true
                 scoringType = settings.scoringType
                 targetPoints = settings.targetPoints
+                if let prefill {
+                    partner = prefill.partner
+                    opponents = prefill.opponents
+                }
             }
         }
     }

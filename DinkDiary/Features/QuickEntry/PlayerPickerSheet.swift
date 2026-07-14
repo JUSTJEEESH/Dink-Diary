@@ -7,6 +7,8 @@ struct PlayerPickerSheet: View {
     let title: String
     var allowsMultiple = false
     var maxSelection: Int? = nil
+    /// People checked in tonight; shown first under a "Here tonight" header.
+    var prioritized: [Player] = []
     var initiallySelected: [Player] = []
     let onDone: ([Player]) -> Void
 
@@ -29,14 +31,14 @@ struct PlayerPickerSheet: View {
                             .foregroundStyle(DD.Colors.textSecondary)
                             .padding(.top, DD.Spacing.gutter)
                     } else {
-                        ForEach(players) { player in
-                            Button {
-                                toggle(player)
-                            } label: {
-                                playerRow(player)
+                        if !hereTonight.isEmpty {
+                            sectionHeader("Here tonight")
+                            ForEach(hereTonight) { player in playerButton(player) }
+                            if !everyoneElse.isEmpty {
+                                sectionHeader("Everyone")
                             }
-                            .buttonStyle(.plain)
                         }
+                        ForEach(everyoneElse) { player in playerButton(player) }
                     }
                 }
                 .padding(DD.Spacing.gutter)
@@ -52,6 +54,23 @@ struct PlayerPickerSheet: View {
             }
             .onAppear { selectedIDs = Set(initiallySelected.map(\.remoteID)) }
         }
+    }
+
+    private var prioritizedIDs: Set<UUID> { Set(prioritized.map(\.remoteID)) }
+    private var hereTonight: [Player] { players.filter { prioritizedIDs.contains($0.remoteID) } }
+    private var everyoneElse: [Player] { players.filter { !prioritizedIDs.contains($0.remoteID) } }
+
+    private func playerButton(_ player: Player) -> some View {
+        Button { toggle(player) } label: { playerRow(player) }
+            .buttonStyle(.plain)
+    }
+
+    private func sectionHeader(_ text: String) -> some View {
+        HStack {
+            Text(text).ddCaption()
+            Spacer()
+        }
+        .padding(.top, DD.Spacing.rowGap)
     }
 
     private var newPlayerField: some View {

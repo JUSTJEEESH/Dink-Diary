@@ -41,11 +41,12 @@ $ = monetizable.
   taxing the 10-second default flow. Serve/side, who ended the rally. Never framed
   as coaching; it's richer memory.
 - **Undo/redo history and mid-game edit** on the phone, matching the watch.
-- **Doubles rotation memory** — remember the four players and suggest next-game
-  matchups from who's here.
-- **"Who's here tonight" roster** — check in the players present; partner picker
-  pre-filters to them.
-- **Quick re-log** — "same four, swap partners" one-tap for the next game.
+- **Doubles rotation memory** (done) — the "Swap partners" chip cycles the four
+  on court to the next pairing automatically.
+- **"Who's here tonight" roster** (done) — check in the crew; the partner and
+  opponent pickers float them to the top under a "Here tonight" header.
+- **Quick re-log** (done) — "Rematch" and "Swap partners" chips pre-fill the
+  teams so the next game is just a score.
 - **Tournament / bracket day (lite)** — track a round-robin or bracket as one
   session with standings, warmly framed.
 - **Open-play session mode** — long session, many partners, auto-rotate.
