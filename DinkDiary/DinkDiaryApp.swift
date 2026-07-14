@@ -13,6 +13,7 @@ struct DinkDiaryApp: App {
         WindowGroup {
             RootTabView()
                 .preferredColorScheme(.dark)
+                .environment(PremiumStore.shared)
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, phase in

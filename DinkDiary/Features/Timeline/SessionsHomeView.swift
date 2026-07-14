@@ -43,6 +43,9 @@ struct SessionsHomeView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Button("Seed sample season") { SampleData.seed(into: context) }
+                        Button(PremiumStore.shared.isPremium ? "Switch to free" : "Unlock premium") {
+                            PremiumStore.shared.isPremium.toggle()
+                        }
                         Button("Clear all", role: .destructive) { clearAll() }
                     } label: {
                         Image(systemName: "ladybug.fill")

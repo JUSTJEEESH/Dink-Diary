@@ -53,4 +53,115 @@ enum StatsEngine {
     static func games(atCourt court: Court) -> [Game] {
         (court.sessions ?? []).flatMap { $0.games ?? [] }
     }
+
+    // MARK: Insights
+
+    struct PlayerRecord: Identifiable {
+        let player: Player
+        let wins: Int
+        let losses: Int
+        var id: UUID { player.remoteID }
+        var total: Int { wins + losses }
+        var winRate: Double { total == 0 ? 0 : Double(wins) / Double(total) }
+    }
+
+    enum TimeOfDay: String, CaseIterable, Identifiable {
+        case morning, afternoon, evening
+        var id: String { rawValue }
+        var label: String {
+            switch self {
+            case .morning: return "Morning"
+            case .afternoon: return "Afternoon"
+            case .evening: return "Evening"
+            }
+        }
+    }
+
+    struct TimeBucket: Identifiable {
+        let time: TimeOfDay
+        let wins: Int
+        let losses: Int
+        var id: String { time.id }
+        var total: Int { wins + losses }
+        var winRate: Double { total == 0 ? 0 : Double(wins) / Double(total) }
+    }
+
+    /// Partners ranked by win rate together (min games), best chemistry first.
+    static func chemistryRanking(in games: [Game], minGames: Int = 2) -> [PlayerRecord] {
+        uniquePartners(in: games)
+            .compactMap { player in
+                let r = record(withPartner: player, in: games)
+                let record = PlayerRecord(player: player, wins: r.wins, losses: r.losses)
+                return record.total >= minGames ? record : nil
+            }
+            .sorted { $0.winRate != $1.winRate ? $0.winRate > $1.winRate : $0.total > $1.total }
+    }
+
+    /// The opponent you fare worst against (min games): a rivalry, not a failure.
+    static func nemesis(in games: [Game], minGames: Int = 3) -> PlayerRecord? {
+        uniqueOpponents(in: games)
+            .compactMap { player -> PlayerRecord? in
+                let r = record(against: player, in: games)
+                let record = PlayerRecord(player: player, wins: r.wins, losses: r.losses)
+                return record.total >= minGames ? record : nil
+            }
+            .min { a, b in a.winRate != b.winRate ? a.winRate < b.winRate : a.losses > b.losses }
+    }
+
+    /// Your record split by time of day, buckets you've actually played.
+    static func timeBuckets(in games: [Game]) -> [TimeBucket] {
+        var tally: [TimeOfDay: (wins: Int, losses: Int)] = [:]
+        let calendar = Calendar.current
+        for game in games {
+            let hour = calendar.component(.hour, from: game.playedAt)
+            let time: TimeOfDay = hour < 12 ? .morning : (hour < 17 ? .afternoon : .evening)
+            var rec = tally[time] ?? (0, 0)
+            if game.didWin { rec.wins += 1 } else { rec.losses += 1 }
+            tally[time] = rec
+        }
+        return TimeOfDay.allCases.compactMap { time in
+            guard let rec = tally[time], rec.wins + rec.losses > 0 else { return nil }
+            return TimeBucket(time: time, wins: rec.wins, losses: rec.losses)
+        }
+    }
+
+    /// Longest run of consecutive wins across all games in time order.
+    static func longestWinStreak(in games: [Game]) -> Int {
+        var best = 0, current = 0
+        for game in games.sorted(by: { $0.playedAt < $1.playedAt }) {
+            if game.didWin { current += 1; best = max(best, current) } else { current = 0 }
+        }
+        return best
+    }
+
+    /// Total points scored and allowed across the given games.
+    static func pointsForAgainst(in games: [Game]) -> (scored: Int, allowed: Int) {
+        games.reduce(into: (scored: 0, allowed: 0)) { totals, game in
+            totals.scored += game.myScore
+            totals.allowed += game.theirScore
+        }
+    }
+
+    private static func uniquePartners(in games: [Game]) -> [Player] {
+        var seen = Set<UUID>()
+        var result: [Player] = []
+        for game in games {
+            guard let p = game.myPartner, p.isAlive, !seen.contains(p.remoteID) else { continue }
+            seen.insert(p.remoteID)
+            result.append(p)
+        }
+        return result
+    }
+
+    private static func uniqueOpponents(in games: [Game]) -> [Player] {
+        var seen = Set<UUID>()
+        var result: [Player] = []
+        for game in games {
+            for opponent in game.opponents ?? [] where opponent.isAlive && !seen.contains(opponent.remoteID) {
+                seen.insert(opponent.remoteID)
+                result.append(opponent)
+            }
+        }
+        return result
+    }
 }

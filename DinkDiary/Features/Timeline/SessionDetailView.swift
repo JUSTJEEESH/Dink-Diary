@@ -4,6 +4,7 @@ import SwiftUI
 /// followed by the game list.
 struct SessionDetailView: View {
     let session: Session
+    @State private var showingShare = false
 
     private var games: [Game] { session.gamesInOrder }
 
@@ -23,5 +24,19 @@ struct SessionDetailView: View {
         .background(DD.Colors.surface)
         .navigationTitle("Session")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingShare = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .foregroundStyle(DD.Colors.accentWin)
+                .disabled(games.isEmpty)
+            }
+        }
+        .sheet(isPresented: $showingShare) {
+            ShareCardSheet(session: session)
+        }
     }
 }
