@@ -8,6 +8,7 @@ import Observation
 @Observable
 final class WatchSessionStore {
     private(set) var isActive = false
+    private(set) var sessionID: UUID?
     private(set) var startedAt: Date?
     private(set) var games: [WatchGame] = []
     var roster: [RosterPlayer] = []
@@ -30,6 +31,7 @@ final class WatchSessionStore {
 
     func startSession() {
         isActive = true
+        sessionID = UUID()
         startedAt = .now
         games = []
         persist()
@@ -41,11 +43,16 @@ final class WatchSessionStore {
     }
 
     func endSession() {
-        // M3: flush `games` to the phone over WatchConnectivity here.
         isActive = false
+        sessionID = nil
         games = []
         startedAt = nil
         persist()
+    }
+
+    /// Replace the partner grid with the roster the phone pushed down.
+    func updateRoster(_ players: [RosterPlayer]) {
+        roster = players
     }
 
     // MARK: Persistence
@@ -57,12 +64,13 @@ final class WatchSessionStore {
 
     private struct Snapshot: Codable {
         var isActive: Bool
+        var sessionID: UUID?
         var startedAt: Date?
         var games: [WatchGame]
     }
 
     private func persist() {
-        let snapshot = Snapshot(isActive: isActive, startedAt: startedAt, games: games)
+        let snapshot = Snapshot(isActive: isActive, sessionID: sessionID, startedAt: startedAt, games: games)
         if let data = try? JSONEncoder().encode(snapshot) {
             try? data.write(to: fileURL, options: .atomic)
         }
@@ -72,6 +80,7 @@ final class WatchSessionStore {
         guard let data = try? Data(contentsOf: fileURL),
               let snapshot = try? JSONDecoder().decode(Snapshot.self, from: data) else { return }
         isActive = snapshot.isActive
+        sessionID = snapshot.sessionID
         startedAt = snapshot.startedAt
         games = snapshot.games
     }
