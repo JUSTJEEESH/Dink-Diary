@@ -30,6 +30,14 @@ extension DD {
         /// frame + minimumScaleFactor it scales down to fill each tap-half, so
         /// the score is as large as the watch allows.
         static let watchScoreFill = Font.system(size: 140, weight: .heavy, design: .rounded).monospacedDigit()
+
+        /// Scoring numeral sized so the visible digit fills a box of the given
+        /// height: the font is oversized past the box and the empty line-height
+        /// margins are clipped away, so the glyph reads large rather than the
+        /// ~70% a plain font of that size would show.
+        static func watchScoreFilling(_ boxHeight: CGFloat) -> Font {
+            .system(size: boxHeight * 1.3, weight: .heavy, design: .rounded).monospacedDigit()
+        }
     }
 }
 

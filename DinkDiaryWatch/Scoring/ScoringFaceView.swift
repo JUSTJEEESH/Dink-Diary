@@ -13,7 +13,7 @@ struct ScoringFaceView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let numberHeight = geo.size.height * 0.27
+            let numberHeight = geo.size.height * 0.30
 
             ZStack {
                 DD.Colors.watchCanvas
@@ -61,12 +61,16 @@ struct ScoringFaceView: View {
     }
 
     private func numeral(_ value: Int, color: Color, height: CGFloat) -> some View {
+        // Oversize the font so the digit fills the box, then clip the empty
+        // line-height margins. Scores are at most two digits, which fit the
+        // watch width at this size, so no width scaling is needed.
         Text("\(value)")
-            .font(DD.Fonts.watchScore)
+            .font(DD.Fonts.watchScoreFilling(height))
             .foregroundStyle(color)
             .lineLimit(1)
-            .minimumScaleFactor(0.4)
+            .fixedSize()
             .frame(height: height)
+            .clipped()
     }
 
     private func teamLabel(_ team: Team) -> some View {
