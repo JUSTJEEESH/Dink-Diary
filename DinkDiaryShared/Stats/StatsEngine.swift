@@ -32,4 +32,25 @@ enum StatsEngine {
         }
         return streak
     }
+
+    /// How many games you played with this player as partner.
+    static func gamesCount(withPartner player: Player, in games: [Game]) -> Int {
+        games.filter { $0.myPartner?.remoteID == player.remoteID }.count
+    }
+
+    /// The last time you shared a court with this player (partner or opponent).
+    static func lastPlayed(with player: Player, in games: [Game]) -> Date? {
+        games
+            .filter { game in
+                game.myPartner?.remoteID == player.remoteID
+                    || (game.opponents ?? []).contains { $0.remoteID == player.remoteID }
+            }
+            .map(\.playedAt)
+            .max()
+    }
+
+    /// Games played at a court, across all its sessions.
+    static func games(atCourt court: Court) -> [Game] {
+        (court.sessions ?? []).flatMap { $0.games ?? [] }
+    }
 }

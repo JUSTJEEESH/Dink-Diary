@@ -11,6 +11,8 @@ extension DD {
         static let statSmall = Font.system(size: 28, weight: .bold, design: .rounded).monospacedDigit()
         /// Session record as it appears in a feed card (statLarge, size-fit to 48).
         static let sessionRecord = Font.system(size: 48, weight: .bold, design: .rounded).monospacedDigit()
+        /// Record on the trophy recap card (statLarge, size-fit to 84).
+        static let trophyRecord = Font.system(size: 84, weight: .bold, design: .rounded).monospacedDigit()
         /// Small rounded-bold numerals inside badges and chips.
         static let statBadge = Font.system(size: 13, weight: .bold, design: .rounded).monospacedDigit()
 

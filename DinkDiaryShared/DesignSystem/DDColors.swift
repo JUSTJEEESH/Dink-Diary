@@ -36,7 +36,26 @@ extension DD {
         /// Kitchen-line motif on empty states.
         static let motifDimmed = Color("motifDimmed")
 
+        /// Top of the trophy / share-card gradient (deeper blue than surface).
+        static let gradientTop = Color("gradientTop")
+
         /// The wrist scoring canvas is true black (OLED), never `surface`.
         static let watchCanvas = Color.black
+    }
+
+    /// Locked gradients per colors.md / components.md.
+    enum Gradients {
+        /// Trophy recap card: #10182A -> #141A24, top to bottom.
+        static let trophy = LinearGradient(
+            colors: [DD.Colors.gradientTop, DD.Colors.surfaceElevated],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        /// Share-card story gradient: #10182A -> #0A0E14, so it never reads pure black.
+        static let shareCard = LinearGradient(
+            colors: [DD.Colors.gradientTop, DD.Colors.surface],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Read view of a session. The trophy recap card that makes this the screenshot
-/// artifact arrives in M4; for now it reuses the feed card plus the game list.
+/// Read view of a session, led by the trophy recap card (the screenshot artifact)
+/// followed by the game list.
 struct SessionDetailView: View {
     let session: Session
 
@@ -10,7 +10,7 @@ struct SessionDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: DD.Spacing.cardGap) {
-                SessionCardView(session: session)
+                TrophyRecapCard(session: session)
 
                 ForEach(games) { game in
                     GameRowView(game: game)
