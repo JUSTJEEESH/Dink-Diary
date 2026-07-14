@@ -11,9 +11,13 @@ extension Court {
 }
 
 /// The full map of everywhere you've played: one tinted pin per court, each
-/// tappable through to its page. A memory you can pan around.
+/// tappable through to its page. A memory you can pan around. Navigation is
+/// driven from this view's body (not from inside the annotation) because a Map
+/// renders annotation content in its own layer, where a NavigationLink would
+/// lose the navigation stack.
 struct CourtsMapView: View {
     let courts: [Court]
+    @State private var selected: Court?
 
     private var mapped: [Court] { courts.filter { $0.coordinate != nil } }
 
@@ -23,10 +27,9 @@ struct CourtsMapView: View {
                 ForEach(mapped) { court in
                     if let coordinate = court.coordinate {
                         Annotation(court.name, coordinate: coordinate) {
-                            NavigationLink(value: court) {
-                                CourtPin(court: court)
-                            }
-                            .buttonStyle(.plain)
+                            CourtPin(court: court)
+                                .contentShape(Rectangle())
+                                .onTapGesture { selected = court }
                         }
                     }
                 }
@@ -40,6 +43,9 @@ struct CourtsMapView: View {
         }
         .navigationTitle("Everywhere you've played")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(item: $selected) { court in
+            CourtDetailView(court: court)
+        }
     }
 
     private var emptyState: some View {
