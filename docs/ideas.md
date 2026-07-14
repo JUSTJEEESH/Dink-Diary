@@ -133,12 +133,16 @@ $ = monetizable.
 - **Localization** — Spanish first (large pickleball demographic), then more.
 - **One-handed / large-tap** modes for older players (the 45+ core).
 
-## 10. Surfaces & platforms
+## 10. Surfaces & platforms — DEFERRED TO v2
 
-- **iPad** — a gorgeous timeline and big share-card studio.
-- **Mac (Catalyst)** — the season as a wall.
-- **visionOS** — a spatial scoreboard / recap (halo feature).
-- **Apple TV** — a club's session board on the wall at the courts.
+Decision (owner, 2026): v1 stays **iPhone + Apple Watch only**. Expand later,
+and only into the two surfaces that extend the memory + hub thesis. visionOS is
+cut: it is a mismatch for this genre's core age group (45+). Mac is unlikely.
+
+- **iPad (v2)** — a gorgeous timeline and big share-card studio.
+- **Apple TV (v2)** — a club's session board on the wall at the courts.
+- ~~visionOS~~ — cut; wrong audience.
+- ~~Mac (Catalyst)~~ — unlikely; revisit only if there is real demand.
 
 ## 11. Data, trust, retention
 
@@ -225,11 +229,17 @@ gates real function behind them.
 
 ## Recommended sequence (my opinion)
 
-1. **Year in Review + Milestones** — the moat, and viral. *(building now)*
-2. **Platform superpowers** — widgets, Live Activity, Siri, complication.
-3. **DUPR display + Contacts photos + courts map** — become the hub.
-4. **Point-by-point opt-in + photo-per-session** — capture depth + memory.
-5. **Share themes + head-to-head + tag-a-partner** — growth loop.
+Scope: v1 = iPhone + Apple Watch. Everything below is v1 except where noted; the
+whole of §10 (iPad, Apple TV) is v2.
+
+0. **Season Hero on the home tab** — the everyday first impression. *(done)*
+1. **Year in Review + Milestones** — the moat, and viral. *(done)*
+2. **Rivalry & chemistry storylines** — warm auto-written narrative; pure moat,
+   buildable now, feeds off the data the hero already surfaces. *(next)*
+3. **Platform superpowers** — widgets, Live Activity, Siri, complication.
+4. **DUPR display + Contacts photos + courts map** — become the hub.
+5. **Point-by-point opt-in + photo-per-session** — capture depth + memory.
+6. **Share themes + head-to-head + tag-a-partner** — growth loop.
 
 Everything here bends to the same rule: it should feel like your pickleball life,
 remembered beautifully. When in doubt, choose warmth over utility.
