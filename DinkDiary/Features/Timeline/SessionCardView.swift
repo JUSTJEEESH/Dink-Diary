@@ -14,7 +14,7 @@ struct SessionCardView: View {
         var seen = Set<UUID>()
         var members: [AvatarCluster.Member] = []
         for game in games {
-            guard let p = game.myPartner, !seen.contains(p.remoteID) else { continue }
+            guard let p = game.myPartner, p.isAlive, !seen.contains(p.remoteID) else { continue }
             seen.insert(p.remoteID)
             members.append(.init(initials: p.initials, tint: DD.Colors.avatarTint(seed: p.tintSeed)))
         }

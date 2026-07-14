@@ -82,9 +82,16 @@ struct SessionsHomeView: View {
 
     #if DEBUG
     private func clearAll() {
+        // Delete individually (not via batch delete) so SwiftData nullifies
+        // inverse relationships and leaves no dangling references behind.
         for session in sessions { context.delete(session) }
-        try? context.delete(model: Player.self)
-        try? context.delete(model: Court.self)
+        for player in (try? context.fetch(FetchDescriptor<Player>())) ?? [] {
+            context.delete(player)
+        }
+        for court in (try? context.fetch(FetchDescriptor<Court>())) ?? [] {
+            context.delete(court)
+        }
+        try? context.save()
     }
     #endif
 

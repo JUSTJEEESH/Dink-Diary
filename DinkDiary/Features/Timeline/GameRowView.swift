@@ -5,13 +5,17 @@ import SwiftUI
 struct GameRowView: View {
     let game: Game
 
-    private var partnerName: String { game.myPartner?.name ?? "Solo" }
-    private var partnerInitials: String { game.myPartner?.initials ?? "?" }
+    private var partner: Player? {
+        guard let p = game.myPartner, p.isAlive else { return nil }
+        return p
+    }
+    private var partnerName: String { partner?.name ?? "Solo" }
+    private var partnerInitials: String { partner?.initials ?? "?" }
     private var partnerTint: Color {
-        game.myPartner.map { DD.Colors.avatarTint(seed: $0.tintSeed) } ?? DD.Colors.textSecondary
+        partner.map { DD.Colors.avatarTint(seed: $0.tintSeed) } ?? DD.Colors.textSecondary
     }
     private var opponentsText: String {
-        let names = (game.opponents ?? []).map(\.name).filter { !$0.isEmpty }
+        let names = (game.opponents ?? []).filter { $0.isAlive }.map(\.name).filter { !$0.isEmpty }
         return names.isEmpty ? "" : "vs " + names.joined(separator: " & ")
     }
 
