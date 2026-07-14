@@ -38,6 +38,8 @@ enum DDTab: String, CaseIterable, Identifiable {
 
 struct RootTabView: View {
     @State private var selected: DDTab = .sessions
+    @AppStorage("dd.hasOnboarded") private var hasOnboarded = false
+    @State private var showOnboarding = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -57,6 +59,13 @@ struct RootTabView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             tabBar
+        }
+        .onAppear { showOnboarding = !hasOnboarded }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView {
+                hasOnboarded = true
+                showOnboarding = false
+            }
         }
     }
 

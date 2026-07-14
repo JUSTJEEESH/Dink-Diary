@@ -18,6 +18,7 @@ struct StatTile: View {
                 .foregroundStyle(value == nil ? DD.Colors.textSecondary : tint)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
+                .ddScoreRoll(value)
         }
         .padding(.vertical, 14)
         .padding(.horizontal, 16)

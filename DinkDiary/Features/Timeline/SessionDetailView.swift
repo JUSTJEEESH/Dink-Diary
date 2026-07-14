@@ -17,6 +17,7 @@ struct SessionDetailView: View {
                     GameRowView(game: game)
                 }
             }
+            .ddContentEntrance()
             .padding(.horizontal, DD.Spacing.gutter)
             .padding(.top, DD.Spacing.rowGap)
             .padding(.bottom, 100)

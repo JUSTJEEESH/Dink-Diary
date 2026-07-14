@@ -20,6 +20,7 @@ struct GameOverConfirmView: View {
                 Text("\(myScore)-\(theirScore)")
                     .font(DD.Fonts.watchConfirm)
                     .foregroundStyle(DD.Colors.textPrimary)
+                    .winBounce(active: didWin)
 
                 Text(didWin ? "That's a W." : "They got that one.")
                     .font(DD.Fonts.title3)

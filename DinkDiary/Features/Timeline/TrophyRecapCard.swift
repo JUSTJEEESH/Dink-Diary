@@ -34,6 +34,7 @@ struct TrophyRecapCard: View {
                     .foregroundStyle(isWinning ? DD.Colors.accentWin : DD.Colors.textPrimary)
                     .minimumScaleFactor(0.6)
                     .lineLimit(1)
+                    .winBounce(active: isWinning)
                 Text(games.count == 1 ? "1 game" : "\(games.count) games")
                     .font(DD.Fonts.footnote)
                     .foregroundStyle(DD.Colors.textSecondary)
